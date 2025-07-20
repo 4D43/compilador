@@ -1,12 +1,39 @@
 import re
 import os
-import string 
+import string
+from datetime import datetime
 
-# === 1. Análisis Léxico ===
+# === Formatos de fecha compatibles ===
+FORMATOS_FECHA = [
+    r"\d{4}-\d{2}-\d{2}",              # 2025-07-21
+    r"\d{2}/\d{2}/\d{4}",              # 21/07/2025
+    r"\d{2}-\d{2}-\d{4}",              # 21-07-2025
+    r"\d{1,2} de [a-z]+ de \d{4}"      # 21 de julio de 2025
+]
+
+def es_fecha(texto):
+    texto = texto.lower()
+    for formato in FORMATOS_FECHA:
+        if re.fullmatch(formato, texto):
+            return True
+    return False
+
+def unir_fecha(tokens, inicio):
+    partes = []
+    i = inicio
+    while i < len(tokens):
+        partes.append(tokens[i][1])
+        posible_fecha = ' '.join(partes)
+        if es_fecha(posible_fecha):
+            return posible_fecha, i - inicio + 1
+        i += 1
+    return None, 0
+
+# === Análisis Léxico ===
 def analisis_lexico(texto):
     texto = texto.lower()
     palabras = texto.split()
-    palabras = [p.strip(string.punctuation) for p in palabras if p.strip(string.punctuation)]  # ✅ Limpiar signos
+    palabras = [p.strip(string.punctuation) for p in palabras if p.strip(string.punctuation)]
 
     acciones = {
         "muéstrame", "muestrame", "mostrar", "muestra", "dame", "dámelos", "dámelas",
@@ -24,18 +51,10 @@ def analisis_lexico(texto):
 
     conectores = {
         "que", "donde", "cuyo", "cuyos", "cual", "cuales", "si", "cuando", "mientras",
-        "aunque", "y", "o", "..."
+        "aunque", "y", "o"
     }
 
-    operadores = {
-        "es", "igual", "igual a", "=",
-        "mayor que", ">",
-        "menor que", "<",
-        "mayor o igual que", ">=",
-        "menor o igual que", "<=",
-        "no es", "diferente de", "!=", "<>"
-        
-    }
+    operadores = {"=", ">", "<", ">=", "<=", "!=", "<>"}
 
     tokens = []
     for palabra in palabras:
@@ -55,7 +74,23 @@ def analisis_lexico(texto):
             tokens.append(("PALABRA", palabra))
     return tokens
 
-# === 2. Análisis Sintáctico ===
+def _reemplazar_operadores_compuestos(texto):
+    texto = texto.lower()
+    mapeo = {
+        "mayor o igual que": ">=",
+        "menor o igual que": "<=",
+        "mayor que": ">",
+        "menor que": "<",
+        "igual a": "=",
+        "igual": "=",
+        "no es": "!=",
+        "diferente de": "!="
+    }
+    for frase, reemplazo in mapeo.items():
+        texto = re.sub(r'\b' + re.escape(frase) + r'\b', reemplazo, texto)
+    return texto
+
+# === Análisis Sintáctico ===
 def analisis_sintactico(tokens):
     estructura = {
         "accion": None,
@@ -67,147 +102,148 @@ def analisis_sintactico(tokens):
     while i < len(tokens):
         tipo, valor = tokens[i]
 
+        # Detectar fechas en una sola palabra
+        if es_fecha(valor):
+            estructura["condiciones"].append({
+                "atributo": "fecha",
+                "operador": "=",
+                "valor": valor
+            })
+            i += 1
+            continue
+
+        # Unir tokens para frases como "21 de julio de 2025"
+        if valor == "de" and i > 1 and tokens[i-1][1] == "en":
+            fecha, saltos = unir_fecha(tokens, i-1)
+            if fecha:
+                estructura["condiciones"].append({
+                    "atributo": "fecha",
+                    "operador": "=",
+                    "valor": fecha
+                })
+                i += saltos
+                continue
+
+        # Acción principal
         if tipo == "ACCION" and estructura["accion"] is None:
             estructura["accion"] = valor
 
         elif tipo == "INDICADOR_ENTIDAD":
-            # La siguiente PALABRA después de "tabla", "entidad", etc.
             if i + 1 < len(tokens) and tokens[i+1][0] == "PALABRA":
                 estructura["entidad"] = tokens[i+1][1]
                 i += 1
 
         elif tipo == "PALABRA" and estructura["entidad"] is None:
-            # Asumir la entidad como la primera palabra que parezca sustantivo clave
             estructura["entidad"] = valor
 
-        elif tipo == "CONECTOR" and (valor == "donde" or valor == "que"):
-            # Procesar condiciones normalmente
+        elif tipo == "CONECTOR" and valor in {"donde", "que"}:
             j = i + 1
-            while j < len(tokens):
-                if tokens[j][0] == "PALABRA":
+            while j < len(tokens) - 2:
+                if (
+                    tokens[j][0] == "PALABRA" and
+                    tokens[j+1][0] == "PALABRA" and
+                    tokens[j+2][0] == "PALABRA"
+                ):
                     atributo = tokens[j][1]
-                    k = j + 1
-                    while k < len(tokens):
-                        current_token = tokens[k]
-                        if current_token[0] == "OPERADOR":
-                            operador = current_token[1]
-                            l = k + 1
-                            if l < len(tokens) and tokens[l][0] == "PALABRA":
-                                valor_condicion = tokens[l][1]
-                                estructura["condiciones"].append({
-                                    "atributo": atributo,
-                                    "operador": operador,
-                                    "valor": valor_condicion
-                                })
-                                j = l
-                                i = j
-                                break
-                        elif current_token[0] == "CONECTOR" and current_token[1] == "y":
-                            j = k
-                            break
-                        k += 1
-                    else:
-                        j = k
+                    operador_compuesto = f"{tokens[j+1][1]} {tokens[j+2][1]}"
+                    operador_normalizado = _reemplazar_operadores_compuestos(operador_compuesto)
+                    if operador_normalizado in {"=", ">", "<", ">=", "<=", "!=", "<>"}:
+                        if j + 3 < len(tokens):
+                            estructura["condiciones"].append({
+                                "atributo": atributo,
+                                "operador": operador_normalizado,
+                                "valor": tokens[j+3][1]
+                            })
+                            j += 4
+                            continue
                 j += 1
             i = j
+            continue
 
-                # Nueva heurística para frases como "con edad menor a 48"
         elif valor == "con" and i + 3 < len(tokens):
-            if (tokens[i+1][0] == "PALABRA" and
-                tokens[i+2][0] == "PALABRA" and
-                tokens[i+3][0] == "PALABRA"):
+            atributo = tokens[i+1][1]
+            operador = _reemplazar_operadores_compuestos(tokens[i+2][1])
+            valor_c = tokens[i+3][1]
+            if operador in {"=", ">", "<", ">=", "<=", "!=", "<>"}:
+                estructura["condiciones"].append({
+                    "atributo": atributo,
+                    "operador": operador,
+                    "valor": valor_c
+                })
+                i += 3
 
-                atributo = tokens[i+1][1]
-                posible_operador = tokens[i+2][1]
-                posible_valor = tokens[i+3][1]
-
-                operador_normalizado = _reemplazar_operadores_compuestos(posible_operador)
-
-                if operador_normalizado in ["=", ">", "<", ">=", "<=", "!=", "<>"]:
-                    estructura["condiciones"].append({
-                        "atributo": atributo,
-                        "operador": operador_normalizado,
-                        "valor": posible_valor
-                    })
-                    i += 3  # Avanzar después del valor procesado
-        # Heurística para frases como "clientes de Lima"
         elif valor == "de" and i > 0 and tokens[i-1][0] == "PALABRA":
+            if not (i+1 < len(tokens) and es_fecha(tokens[i+1][1])):
+                if estructura["entidad"] is None:
+                    estructura["entidad"] = tokens[i-1][1]
+                if i + 1 < len(tokens) and tokens[i+1][0] == "PALABRA":
+                    estructura["condiciones"].append({
+                        "atributo": "dept",
+                        "operador": "=",
+                        "valor": tokens[i+1][1].rstrip(".")
+                    })
+                    i += 1
+
+        
+            # Ej: "cliente llamado Lucia" o "cliente llamada Lucia"
+        elif valor in {"llamado", "llamada"} and i > 0 and tokens[i-1][0] == "PALABRA":
             if estructura["entidad"] is None:
                 estructura["entidad"] = tokens[i-1][1]
-            if i + 1 < len(tokens) and tokens[i+1][0] == "PALABRA":
+            if i + 1 < len(tokens):
                 estructura["condiciones"].append({
-                    "atributo": "dept",  # o "ubicacion", si prefieres
-                    "operador": "igual",
-                    "valor": tokens[i+1][1].rstrip(".")  # eliminar punto final
+                    "atributo": "nombre",
+                    "operador": "=",
+                    "valor": tokens[i+1][1]
+                })
+                i += 1  # Saltar el nombre
+
+        # Ej: "cliente que se llama Pedro"
+        elif (valor == "llama" or valor == "llaman") and i >= 2 and tokens[i-1][1] == "se":
+            if estructura["entidad"] is None and i >= 3:
+                estructura["entidad"] = tokens[i-3][1]
+            if i + 1 < len(tokens):
+                estructura["condiciones"].append({
+                    "atributo": "nombre",
+                    "operador": "=",
+                    "valor": tokens[i+1][1]
                 })
                 i += 1
-
         i += 1
 
     return estructura
 
-# === Función de reemplazo de operadores compuestos ===
-def _reemplazar_operadores_compuestos(texto):
-    texto = texto.lower()
-    mapeo = {
-        "mayor o igual que": ">=",
-        "menor o igual que": "<=",
-        "igual a": "=",
-        "igual": "=",    
-        "diferente de": "!=",
-        "no es": "!="  
-    }
-    for frase, reemplazo in mapeo.items():
-        texto = re.sub(r'\b' + re.escape(frase) + r'\b', reemplazo, texto)
-    return texto
-
+# === Análisis Semántico ===
 def analisis_semantico_mejorado(estructura):
-    condicion_sql = []
+    condiciones_ln = []
+    operador_map = {
+        "=": "igual",
+        ">": "mayor",
+        "<": "menor",
+        ">=": "mayor o igual",
+        "<=": "menor o igual",
+        "!=": "diferente",
+        "<>": "diferente"
+    }
     for cond in estructura["condiciones"]:
         atributo = cond["atributo"]
-        operador_nl = cond["operador"]
+        operador = operador_map.get(cond["operador"], cond["operador"])
         valor = cond["valor"]
+        condiciones_ln.append(f"{atributo} {operador} {valor}")
+    return " y ".join(condiciones_ln)
 
-        operador_nl_procesado = _reemplazar_operadores_compuestos(operador_nl)
-
-        op_sql = ""
-        if operador_nl_procesado == "=":
-            op_sql = "igual"
-        elif operador_nl_procesado == ">":
-            op_sql = "mayor"
-        elif operador_nl_procesado == "<":
-            op_sql = "menor"
-        elif operador_nl_procesado == ">=":
-            op_sql = "mayor_o_igual"
-        elif operador_nl_procesado == "<=":
-            op_sql = "menor_o_igual"
-        elif operador_nl_procesado in {"!=", "<>"}:
-            op_sql = "diferente"
-        else:
-            op_sql = "desconocido"
-
-        valor_formateado = valor
-
-        if op_sql != "desconocido":
-            condicion_sql.append(f"{atributo} {op_sql} {valor_formateado}")
-
-    return " y ".join(condicion_sql)
-
-# === 4. Generar lenguaje natural final ===
+# === Generar Consulta en Lenguaje Natural ===
 def generar_lenguaje_natural_final(estructura, condiciones_ln):
     if not estructura["entidad"]:
         return "-- No se puede generar consulta en LN: entidad desconocida."
-
-    consulta_ln = f"selecciona * de {estructura['entidad']}"
+    consulta = f"selecciona * de {estructura['entidad']}"
     if condiciones_ln:
-        consulta_ln += f" donde {condiciones_ln}"
-    consulta_ln += "."
-    return consulta_ln
-# === 4b. Generar SQL real ===
+        consulta += f" donde {condiciones_ln}"
+    return consulta + "."
+
+# === Generar SQL ===
 def generar_sql(estructura):
     if not estructura["entidad"]:
         return "-- No se puede generar consulta SQL: entidad desconocida."
-
     sql = f"SELECT * FROM {estructura['entidad']}"
     condiciones = []
 
@@ -216,85 +252,57 @@ def generar_sql(estructura):
         operador = cond["operador"]
         valor = cond["valor"]
 
-        # Mapeo a operadores SQL
-        op_map = {
-            "igual": "=",
-            "mayor": ">",
-            "menor": "<",
-            "mayor_o_igual": ">=",
-            "menor_o_igual": "<=",
-            "diferente": "!="
-        }
-
-        simbolo = op_map.get(operador, "=")
-
-        # Comillas si no es número
-        if valor.replace('.', '', 1).isdigit():
-            condiciones.append(f"{atributo} {simbolo} {valor}")
+        # Conversión de fecha con formato largo
+        if atributo == "fecha" and re.match(r"\d{1,2} de [a-z]+ de \d{4}", valor):
+            try:
+                fecha_obj = datetime.strptime(valor, "%d de %B de %Y")
+                valor = fecha_obj.strftime("%Y-%m-%d")
+            except:
+                pass
+            condiciones.append(f"{atributo} {operador} DATE('{valor}')")
         else:
-            condiciones.append(f'{atributo} {simbolo} "{valor}"')
+            if valor.replace(".", "", 1).isdigit():
+                condiciones.append(f"{atributo} {operador} {valor}")
+            else:
+                condiciones.append(f"{atributo} {operador} '{valor}'")
 
     if condiciones:
         sql += " WHERE " + " AND ".join(condiciones)
+    return sql + ";"
 
-    sql += ";"
-    return sql
-
-
-# === 5. Principal ===
+# === Compilador Principal ===
 def compilador_nl2sql_texto(texto):
     print("Texto de entrada:", texto)
-
     tokens = analisis_lexico(texto)
-    print("\nTokens léxicos:")
-    for t in tokens:
-        print(t)
+    print("\nTokens léxicos:", tokens)
 
     estructura = analisis_sintactico(tokens)
-    print("\nEstructura sintáctica:")
-    print(estructura)
+    print("\nEstructura sintáctica:", estructura)
 
     condiciones_ln = analisis_semantico_mejorado(estructura)
-    print("\nCondición en lenguaje natural tras análisis semántico:")
-    print(condiciones_ln)
+    print("\nCondición en lenguaje natural:", condiciones_ln)
 
     consulta_ln = generar_lenguaje_natural_final(estructura, condiciones_ln)
-    print("\nConsulta en lenguaje natural generada para Gestor:")
-    print(consulta_ln)
+    print("\nConsulta NL:", consulta_ln)
 
     consulta_sql = generar_sql(estructura)
-    print("\nConsulta SQL generada:")
-    print(consulta_sql)
+    print("\nConsulta SQL:", consulta_sql)
 
     return consulta_sql
 
-# === Ejecutable ===
+# === Main ===
 if __name__ == "__main__":
-    nombre_archivo_transcripcion = "compilador/transcripcion.txt"
-    nombre_archivo_para_gestor = "compilador/consulta_para_gestor.txt"
+    nombre_archivo_transcripcion = "transcripcion.txt"
+    nombre_archivo_para_gestor = "/home/ubuntu20/5semestre-2025A/nnnlllpppp222/compilador/consulta_para_gestor.txt"
 
-    contenido_transcrito = ""
     if os.path.exists(nombre_archivo_transcripcion):
-        try:
-            with open(nombre_archivo_transcripcion, "r", encoding="utf-8") as f:
-                contenido_transcrito = f.read().strip()
-            if not contenido_transcrito:
-                print(f"El archivo '{nombre_archivo_transcripcion}' está vacío. No hay consulta para procesar.")
-                exit()
-        except Exception as e:
-            print(f"Error al leer el archivo '{nombre_archivo_transcripcion}': {e}")
-            exit()
+        with open(nombre_archivo_transcripcion, "r", encoding="utf-8") as f:
+            contenido = f.read().strip()
     else:
-        print(f"Error: El archivo '{nombre_archivo_transcripcion}' no se encontró.")
-        contenido_transcrito = "muéstrame todos los datos de la tabla empleados donde edad mayor que 30"
-        print(f"Usando consulta de ejemplo: '{contenido_transcrito}'")
+        print("⚠ No se encontró el archivo. Usando consulta de ejemplo.")
+        contenido = "muéstrame las ventas que se realizaron en 21 de julio de 2025"
 
-    if contenido_transcrito:
-        consulta_para_gestor = compilador_nl2sql_texto(contenido_transcrito)
-        if consulta_para_gestor:
-            try:
-                with open(nombre_archivo_para_gestor, "w", encoding="utf-8") as f:
-                    f.write(consulta_para_gestor)
-                print(f"\nConsulta para Gestor guardada en '{nombre_archivo_para_gestor}'")
-            except Exception as e:
-                print(f"Error al escribir en el archivo '{nombre_archivo_para_gestor}': {e}")
+    sql_generado = compilador_nl2sql_texto(contenido)
+    with open(nombre_archivo_para_gestor, "w", encoding="utf-8") as f:
+        f.write(sql_generado)
+    print(f"\nConsulta SQL guardada en: {nombre_archivo_para_gestor}")
