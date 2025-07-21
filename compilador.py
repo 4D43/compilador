@@ -81,6 +81,7 @@ def _reemplazar_operadores_compuestos(texto):
         "menor o igual que": "<=",
         "mayor que": ">",
         "menor que": "<",
+        "menor a": "<",
         "igual a": "=",
         "igual": "=",
         "no es": "!=",
@@ -134,7 +135,11 @@ def analisis_sintactico(tokens):
                 i += 1
 
         elif tipo == "PALABRA" and estructura["entidad"] is None:
-            estructura["entidad"] = valor
+            if valor in {"clientes", "productos", "ventas"}:  # tablas válidas
+                estructura["entidad"] = valor
+            elif valor in {"nombre", "edad", "id", "dept", "precio", "fecha"}:  # atributos válidos
+                estructura.setdefault("atributos_mostrar", []).append(valor)
+
 
         elif tipo == "CONECTOR" and valor in {"donde", "que"}:
             j = i + 1
@@ -160,17 +165,19 @@ def analisis_sintactico(tokens):
             i = j
             continue
 
-        elif valor == "con" and i + 3 < len(tokens):
+        elif valor == "con" and i + 4 < len(tokens):
             atributo = tokens[i+1][1]
-            operador = _reemplazar_operadores_compuestos(tokens[i+2][1])
-            valor_c = tokens[i+3][1]
+            posible_operador = f"{tokens[i+2][1]} {tokens[i+3][1]}"
+            operador = _reemplazar_operadores_compuestos(posible_operador)
+            valor_c = tokens[i+4][1]
+
             if operador in {"=", ">", "<", ">=", "<=", "!=", "<>"}:
                 estructura["condiciones"].append({
                     "atributo": atributo,
                     "operador": operador,
                     "valor": valor_c
                 })
-                i += 3
+                i += 4
 
         elif valor == "de" and i > 0 and tokens[i-1][0] == "PALABRA":
             if not (i+1 < len(tokens) and es_fecha(tokens[i+1][1])):
@@ -186,7 +193,7 @@ def analisis_sintactico(tokens):
 
         
             # Ej: "cliente llamado Lucia" o "cliente llamada Lucia"
-        elif valor in {"llamado", "llamada"} and i > 0 and tokens[i-1][0] == "PALABRA":
+        elif valor in {"llamado","llamados", "llamada"} and i > 0 and tokens[i-1][0] == "PALABRA":
             if estructura["entidad"] is None:
                 estructura["entidad"] = tokens[i-1][1]
             if i + 1 < len(tokens):
@@ -244,7 +251,12 @@ def generar_lenguaje_natural_final(estructura, condiciones_ln):
 def generar_sql(estructura):
     if not estructura["entidad"]:
         return "-- No se puede generar consulta SQL: entidad desconocida."
-    sql = f"SELECT * FROM {estructura['entidad']}"
+    if "atributos_mostrar" in estructura and estructura["atributos_mostrar"]:
+        campos = ", ".join(estructura["atributos_mostrar"])
+        sql = f"SELECT {campos} FROM {estructura['entidad']}"
+    else:
+        sql = f"SELECT * FROM {estructura['entidad']}"
+
     condiciones = []
 
     for cond in estructura["condiciones"]:
