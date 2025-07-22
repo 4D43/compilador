@@ -18,7 +18,6 @@ fd#id#int#nombre#str#edad#int#dept#string#
 fd#nombre#str#
 fd#nombre#str#
 fd#nombre#str
-f#id#int#nombre#str#edad#int#dept#string#�a#�v�^L�a#*�2v��a#��2v
 fd#edad#int#nombre#str#id#int
 todos_clientes#id#int#nombre#str#edad#int#dept#string
 nombres_edades#nombre#str#edad#int
@@ -30,4 +29,3 @@ Consulta_clientes#clientes.nombre#str#empleados.departamento#str
 join_completo#clientes.id#int#clientes.nombre#str#clientes.edad#int#clientes.dept#string#empleados.empleado_id#int#empleados.nombre#str#empleados.puesto#str#empleados.salario#float#empleados.departamento#str
 cliente_ana#id#int#nombre#str
 Consulta_clientes
-SELECT * FROM clientes WHERE id < 3Consulta_clientes#id#int#nombre#str#edad#int#dept#string
