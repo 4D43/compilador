@@ -1,0 +1,402 @@
+[
+  {
+    "nl_query": "Muéstrame todos los clientes donde edad mayor que 24.",
+    "expected_sql": "SELECT * FROM clientes WHERE edad > 24"
+  },
+  {
+    "nl_query": "Muéstrame las ventas que se realizaron en 2025-07-21",
+    "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-07-21'"
+  },
+  {
+    "nl_query": "ventas realizadas en 21/07/2025",
+    "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-07-21'"
+  },
+  {
+    "nl_query": "Dame el cliente llamado Lucia.",
+    "expected_sql": "SELECT * FROM cliente WHERE nombre = 'lucia'"
+  },
+  {
+    "nl_query": "clientes que se llaman Pedro",
+    "expected_sql": "SELECT * FROM clientes WHERE nombre = 'pedro'"
+  },
+  {
+    "nl_query": "Muéstrame el cliente llamado Jorge que hizo una compra en 2025-07-21",
+    "expected_sql": "SELECT * FROM cliente WHERE nombre = 'Jorge' AND fecha = '2025-07-21'"
+  },
+  {
+    "nl_query": "Dame los clientes con ID igual a 5",
+    "expected_sql": "SELECT * FROM clientes WHERE id = 5"
+  },
+  {
+    "nl_query": "Dame todos los nombres de clientes con ID menor a 5.",
+    "expected_sql": "SELECT nombre FROM clientes WHERE id < 5"
+  },
+  {
+    "nl_query": "Dame todos los productos con precio mayor que 70.",
+    "expected_sql": "SELECT * FROM productos WHERE precio > 70"
+  },
+  {
+    "nl_query": "Dame todos los clientes con ID menor a 10 que hicieron una compra en 7 de diciembre de 2025.",
+    "expected_sql": "SELECT * FROM clientes WHERE id < 10 AND fecha = '2025-12-07'"
+  },
+  {
+    "nl_query": "Dame todos los clientes con ID menor a 10 que hicieron una compra el 7-12-25.",
+    "expected_sql": "SELECT * FROM clientes WHERE id < 10 AND fecha = '2025-12-07'"
+  },
+  
+    {
+      "nl_query": "Dame los productos con precio menor o igual a 50.",
+      "expected_sql": "SELECT * FROM productos WHERE precio <= 50"
+    },
+    {
+      "nl_query": "Muéstrame todos los productos que cuestan más de 100.",
+      "expected_sql": "SELECT * FROM productos WHERE precio > 100"
+    },
+    {
+      "nl_query": "Quiero ver los clientes del departamento ventas.",
+      "expected_sql": "SELECT * FROM clientes WHERE dept = 'ventas'"
+    },
+    {
+      "nl_query": "Muéstrame los clientes mayores de 30 años.",
+      "expected_sql": "SELECT * FROM clientes WHERE edad > 30"
+    },
+    {
+      "nl_query": "Dame todas las ventas realizadas el 12/06/2024.",
+      "expected_sql": "SELECT * FROM ventas WHERE fecha = '2024-06-12'"
+    },
+    {
+      "nl_query": "Ventas realizadas el 01-01-2025",
+      "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-01-01'"
+    },
+    {
+      "nl_query": "Clientes del departamento tecnología menores de 40 años.",
+      "expected_sql": "SELECT * FROM clientes WHERE dept = 'tecnología' AND edad < 40"
+    },
+    {
+      "nl_query": "Productos que cuestan exactamente 79.99",
+      "expected_sql": "SELECT * FROM productos WHERE precio = 79.99"
+    },
+    {
+      "nl_query": "Clientes llamados Ana que pertenecen al departamento marketing.",
+      "expected_sql": "SELECT * FROM clientes WHERE nombre = 'ana' AND dept = 'marketing'"
+    },
+    {
+      "nl_query": "Clientes con ID mayor que 20 que hicieron compras en 2024-05-03.",
+      "expected_sql": "SELECT * FROM clientes WHERE id > 20 AND fecha = '2024-05-03'"
+    },
+    {
+      "nl_query": "Muéstrame los nombres de productos con precio menor que 30.",
+      "expected_sql": "SELECT nombre FROM productos WHERE precio < 30"
+    },
+    {
+      "nl_query": "Lista todos los clientes con nombre Pedro y edad igual a 45.",
+      "expected_sql": "SELECT * FROM clientes WHERE nombre = 'pedro' AND edad = 45"
+    },
+    {
+      "nl_query": "Dame los productos con precio diferente de 100.",
+      "expected_sql": "SELECT * FROM productos WHERE precio != 100"
+    },
+    {
+      "nl_query": "Muéstrame los clientes con nombre igual a Laura.",
+      "expected_sql": "SELECT * FROM clientes WHERE nombre = 'laura'"
+    },
+    {
+      "nl_query": "Muestra los productos que tienen un precio mayor o igual a 150.",
+      "expected_sql": "SELECT * FROM productos WHERE precio >= 150"
+    },
+    
+      {
+        "nl_query": "Muéstrame todos los clientes con edad menor que 18.",
+        "expected_sql": "SELECT * FROM clientes WHERE edad < 18"
+      },
+      {
+        "nl_query": "Dame los productos con precio entre 20 y 50.",
+        "expected_sql": "SELECT * FROM productos WHERE precio > 20 AND precio < 50"
+      },
+      {
+        "nl_query": "Clientes con nombre igual a Sofía.",
+        "expected_sql": "SELECT * FROM clientes WHERE nombre = 'sofia'"
+      },
+      {
+        "nl_query": "Lista todos los productos con nombre Televisor.",
+        "expected_sql": "SELECT * FROM productos WHERE nombre = 'televisor'"
+      },
+      {
+        "nl_query": "Quiero ver las ventas del 15-08-2023.",
+        "expected_sql": "SELECT * FROM ventas WHERE fecha = '2023-08-15'"
+      },
+      {
+        "nl_query": "Muéstrame las ventas hechas en 10 de octubre de 2023.",
+        "expected_sql": "SELECT * FROM ventas WHERE fecha = '2023-10-10'"
+      },
+      {
+        "nl_query": "Clientes que tienen edad igual a 30.",
+        "expected_sql": "SELECT * FROM clientes WHERE edad = 30"
+      },
+      {
+        "nl_query": "Dame todos los productos con precio menor que 10.",
+        "expected_sql": "SELECT * FROM productos WHERE precio < 10"
+      },
+      {
+        "nl_query": "Clientes del departamento recursos humanos.",
+        "expected_sql": "SELECT * FROM clientes WHERE dept = 'recursos humanos'"
+      },
+      {
+        "nl_query": "Productos que cuestan más de 200.",
+        "expected_sql": "SELECT * FROM productos WHERE precio > 200"
+      },
+      {
+        "nl_query": "Ventas realizadas en 31-12-2024.",
+        "expected_sql": "SELECT * FROM ventas WHERE fecha = '2024-12-31'"
+      },
+      {
+        "nl_query": "Dame los clientes que se llaman Miguel.",
+        "expected_sql": "SELECT * FROM clientes WHERE nombre = 'miguel'"
+      },
+      {
+        "nl_query": "Lista las ventas del cliente con ID igual a 3.",
+        "expected_sql": "SELECT * FROM ventas WHERE cliente_id = 3"
+      },
+      {
+        "nl_query": "Muestra los productos con nombre igual a Celular.",
+        "expected_sql": "SELECT * FROM productos WHERE nombre = 'celular'"
+      },
+      {
+        "nl_query": "Muéstrame los clientes del departamento logística.",
+        "expected_sql": "SELECT * FROM clientes WHERE dept = 'logística'"
+      },
+      {
+        "nl_query": "Dame todos los clientes con edad entre 25 y 35.",
+        "expected_sql": "SELECT * FROM clientes WHERE edad > 25 AND edad < 35"
+      },
+      {
+        "nl_query": "Productos con precio igual a 99.9.",
+        "expected_sql": "SELECT * FROM productos WHERE precio = 99.9"
+      },
+      {
+        "nl_query": "Ventas realizadas el 14 de febrero de 2025.",
+        "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-02-14'"
+      },
+      {
+        "nl_query": "Muéstrame los productos con nombre Monitor y precio menor a 120.",
+        "expected_sql": "SELECT * FROM productos WHERE nombre = 'monitor' AND precio < 120"
+      },
+      {
+        "nl_query": "Dame los clientes con nombre Andrés y edad mayor que 40.",
+        "expected_sql": "SELECT * FROM clientes WHERE nombre = 'andres' AND edad > 40"
+      },
+        {
+          "nl_query": "muéstrame los clientes con edad menor que 30",
+          "expected_sql": "SELECT * FROM clientes WHERE edad < 30"
+        },
+        {
+          "nl_query": "dame los productos con precio igual a 99.99",
+          "expected_sql": "SELECT * FROM productos WHERE precio = 99.99"
+        },
+        {
+          "nl_query": "quiero ver las ventas del 2024-01-15",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2024-01-15'"
+        },
+        {
+          "nl_query": "listar todos los clientes que tienen id mayor que 15",
+          "expected_sql": "SELECT * FROM clientes WHERE id > 15"
+        },
+        {
+          "nl_query": "visualiza los productos que cuestan menos de 50",
+          "expected_sql": "SELECT * FROM productos WHERE precio < 50"
+        },
+        {
+          "nl_query": "clientes con id igual a 12",
+          "expected_sql": "SELECT * FROM clientes WHERE id = 12"
+        },
+        {
+          "nl_query": "mostrar productos con precio mayor a 100",
+          "expected_sql": "SELECT * FROM productos WHERE precio > 100"
+        },
+        {
+          "nl_query": "ventas realizadas en 2023-08-10",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2023-08-10'"
+        },
+        {
+          "nl_query": "dame los nombres de productos con precio igual a 25.5",
+          "expected_sql": "SELECT nombre FROM productos WHERE precio = 25.5"
+        },
+        {
+          "nl_query": "muéstrame todos los clientes del departamento lima",
+          "expected_sql": "SELECT * FROM clientes WHERE dept = 'lima'"
+        },
+        {
+          "nl_query": "ventas que se hicieron en 2025-12-25",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-12-25'"
+        },
+        {
+          "nl_query": "dame los productos con id menor a 5",
+          "expected_sql": "SELECT * FROM productos WHERE id < 5"
+        },
+        {
+          "nl_query": "clientes del departamento arequipa",
+          "expected_sql": "SELECT * FROM clientes WHERE dept = 'arequipa'"
+        },
+        {
+          "nl_query": "quiero los productos que cuesten más de 60",
+          "expected_sql": "SELECT * FROM productos WHERE precio > 60"
+        },
+        {
+          "nl_query": "muéstrame los clientes con nombre igual a jose",
+          "expected_sql": "SELECT * FROM clientes WHERE nombre = 'jose'"
+        },
+        {
+          "nl_query": "listar clientes que se llaman maria",
+          "expected_sql": "SELECT * FROM clientes WHERE nombre = 'maria'"
+        },
+        {
+          "nl_query": "obtener ventas hechas en 2022-03-10",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2022-03-10'"
+        },
+        {
+          "nl_query": "ver clientes con edad igual a 40",
+          "expected_sql": "SELECT * FROM clientes WHERE edad = 40"
+        },
+        {
+          "nl_query": "clientes mayores de 60 años",
+          "expected_sql": "SELECT * FROM clientes WHERE edad > 60"
+        },
+        {
+          "nl_query": "productos con precio menor o igual a 15",
+          "expected_sql": "SELECT * FROM productos WHERE precio <= 15"
+        },
+        {
+          "nl_query": "ventas del día 2021-09-01",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2021-09-01'"
+        },
+        {
+          "nl_query": "clientes con id mayor o igual a 25",
+          "expected_sql": "SELECT * FROM clientes WHERE id >= 25"
+        },
+        {
+          "nl_query": "dame productos con id igual a 3",
+          "expected_sql": "SELECT * FROM productos WHERE id = 3"
+        },
+        {
+          "nl_query": "muéstrame las ventas del 2020-10-10",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2020-10-10'"
+        },
+        {
+          "nl_query": "productos con precio diferente de 45",
+          "expected_sql": "SELECT * FROM productos WHERE precio != 45"
+        },
+        {
+          "nl_query": "clientes llamados andrea",
+          "expected_sql": "SELECT * FROM clientes WHERE nombre = 'andrea'"
+        },
+        {
+          "nl_query": "ver los productos cuyo precio es mayor que 70",
+          "expected_sql": "SELECT * FROM productos WHERE precio > 70"
+        },
+        {
+          "nl_query": "ventas hechas el 2025-05-05",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2025-05-05'"
+        },
+        {
+          "nl_query": "dame todos los productos cuyo precio es menor que 40",
+          "expected_sql": "SELECT * FROM productos WHERE precio < 40"
+        },
+        {
+          "nl_query": "productos que cuestan exactamente 80.00",
+          "expected_sql": "SELECT * FROM productos WHERE precio = 80.00"
+        },
+        {
+          "nl_query": "clientes con nombre diferente de ana",
+          "expected_sql": "SELECT * FROM clientes WHERE nombre != 'ana'"
+        },
+        {
+          "nl_query": "mostrar clientes cuyo id es menor a 8",
+          "expected_sql": "SELECT * FROM clientes WHERE id < 8"
+        },
+        {
+          "nl_query": "productos con precio entre 20 y 50",
+          "expected_sql": "SELECT * FROM productos WHERE precio > 20 AND precio < 50"
+        },
+        {
+          "nl_query": "clientes del departamento cusco",
+          "expected_sql": "SELECT * FROM clientes WHERE dept = 'cusco'"
+        },
+        {
+          "nl_query": "clientes con edad mayor a 18",
+          "expected_sql": "SELECT * FROM clientes WHERE edad > 18"
+        },
+        {
+          "nl_query": "ventas registradas en 2023-11-11",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2023-11-11'"
+        },
+        {
+          "nl_query": "productos con id mayor o igual a 7",
+          "expected_sql": "SELECT * FROM productos WHERE id >= 7"
+        },
+        {
+          "nl_query": "clientes con edad menor o igual a 35",
+          "expected_sql": "SELECT * FROM clientes WHERE edad <= 35"
+        },
+        {
+          "nl_query": "muéstrame productos con precio igual a 59.99",
+          "expected_sql": "SELECT * FROM productos WHERE precio = 59.99"
+        },
+        {
+          "nl_query": "clientes de id igual a 2",
+          "expected_sql": "SELECT * FROM clientes WHERE id = 2"
+        },
+        {
+          "nl_query": "productos con nombre igual a monitor",
+          "expected_sql": "SELECT * FROM productos WHERE nombre = 'monitor'"
+        },
+        {
+          "nl_query": "ventas hechas por cliente con id 10",
+          "expected_sql": "SELECT * FROM ventas WHERE cliente_id = 10"
+        },
+        {
+          "nl_query": "ventas del producto con id 5",
+          "expected_sql": "SELECT * FROM ventas WHERE producto_id = 5"
+        },
+        {
+          "nl_query": "productos con precio mayor o igual a 100",
+          "expected_sql": "SELECT * FROM productos WHERE precio >= 100"
+        },
+        {
+          "nl_query": "clientes llamados juan",
+          "expected_sql": "SELECT * FROM clientes WHERE nombre = 'juan'"
+        },
+        {
+          "nl_query": "dame ventas hechas en 2024-02-14",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2024-02-14'"
+        },
+        {
+          "nl_query": "muéstrame todos los productos de nombre teclado",
+          "expected_sql": "SELECT * FROM productos WHERE nombre = 'teclado'"
+        },
+        {
+          "nl_query": "productos que cuestan más de 200",
+          "expected_sql": "SELECT * FROM productos WHERE precio > 200"
+        },
+        {
+          "nl_query": "clientes con edad igual a 50",
+          "expected_sql": "SELECT * FROM clientes WHERE edad = 50"
+        },
+        {
+          "nl_query": "ver ventas hechas el 2021-01-01",
+          "expected_sql": "SELECT * FROM ventas WHERE fecha = '2021-01-01'"
+        },
+        {
+          "nl_query": "productos con precio menor que 10",
+          "expected_sql": "SELECT * FROM productos WHERE precio < 10"
+        },
+        {
+          "nl_query": "clientes del departamento trujillo",
+          "expected_sql": "SELECT * FROM clientes WHERE dept = 'trujillo'"
+        },
+        {
+          "nl_query": "muéstrame clientes con edad mayor que 45",
+          "expected_sql": "SELECT * FROM clientes WHERE edad > 45"
+        } 
+    
+    
+]

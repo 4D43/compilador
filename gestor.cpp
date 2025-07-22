@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-char ruta[100] = "C:/Users/diogo/OneDrive/Documentos/pebd/final";
+char ruta[100] = "/home/ubuntu20/5semestre-2025A/nnnlllpppp222/compilador";
 char NArchivo[100] = "";
 char nombreConsulta[100] = "";
 char contenido[1000] = "";
@@ -264,9 +264,9 @@ void analizarCondiciones() {
     int tam = obtenerTamano();
 
     for (int i = 0; i < tam; i++) {
-        if (stricmp(analisis_local[i], "where") == 0) {
+        if (strcmp(analisis_local[i], "WHERE") == 0) {
             usarCondiciones = true;
-            i++; // Avanzar al primer token luego de "where"
+            i++; // Avanzar al primer token luego de "WHERE"
 
             while (i + 2 < tam && numCondiciones < MAX_COLS) {
                 char* col = analisis_local[i++];
@@ -314,14 +314,14 @@ void analizarComandos() {
 
     int i = 0;
     while (i < tamano) {
-        if (strcmp(analisis[i], "select") == 0) {
+        if (strcmp(analisis[i], "SELECT") == 0) {
             i++;
             if (strcmp(analisis[i], "*") == 0) {
                 // Si es SELECT *, se procesará en seleccionar()
                 num_columnas_seleccionadas = -1; // Indicador de todas las columnas
                 i++;
             } else {
-                while (i < tamano && strcmp(analisis[i], "from") != 0 && strcmp(analisis[i], "join") != 0 && strcmp(analisis[i], "|") != 0) {
+                while (i < tamano && strcmp(analisis[i], "FROM") != 0 && strcmp(analisis[i], "JOIN") != 0 && strcmp(analisis[i], "|") != 0) {
                     if (num_columnas_seleccionadas < MAX_COLS) {
                         strncpy(columnas_seleccionadas[num_columnas_seleccionadas], analisis[i], MAX_LEN - 1);
                         columnas_seleccionadas[num_columnas_seleccionadas][MAX_LEN - 1] = '\0';
@@ -333,14 +333,14 @@ void analizarComandos() {
                     i++;
                 }
             }
-        } else if (strcmp(analisis[i], "from") == 0) {
+        } else if (strcmp(analisis[i], "FROM") == 0) {
             i++;
-            if (i < tamano && strcmp(analisis[i], "where") != 0 && strcmp(analisis[i], "join") != 0 && strcmp(analisis[i], "|") != 0) {
+            if (i < tamano && strcmp(analisis[i], "WHERE") != 0 && strcmp(analisis[i], "JOIN") != 0 && strcmp(analisis[i], "|") != 0) {
                 strncpy(NArchivo, analisis[i], sizeof(NArchivo) - 1);
                 NArchivo[sizeof(NArchivo) - 1] = '\0';
                 i++;
             }
-        } else if (strcmp(analisis[i], "join") == 0) { // <--- Nuevo manejo para JOIN
+        } else if (strcmp(analisis[i], "JOIN") == 0) { // <--- Nuevo manejo para JOIN
             usarJoin = true;
             i++; // Saltar "join"
             // El formato es: SELECT ... FROM tabla1 JOIN tabla2 ON tabla1.col = tabla2.col
@@ -348,7 +348,7 @@ void analizarComandos() {
             // Para simplificar, asumiremos: SELECT ... FROM tabla1 JOIN tabla2 ON col_tabla1 = col_tabla2
             // O un JOIN simple por tablas, y la condición de unión está en el WHERE.
 
-            // Para tu formato propuesto (select ... from clientes join id dept from empleados where ...):
+            // Para tu formato propuesto (select ... from clientes join id dept from empleados WHERE ...):
             // Esto es más como un SELECT DE COLUMNAS ESPECÍFICAS DE LA SEGUNDA TABLA en el JOIN.
             // Es menos común que un JOIN clásico "ON", pero lo implementaremos como tal.
             // Esto significa que las columnas 'id' y 'dept' en tu ejemplo no son la condición de JOIN,
@@ -365,13 +365,13 @@ void analizarComandos() {
             // Si el "ON" no está, asumimos que la condición de JOIN vendrá del WHERE (si la hay y la podemos interpretar)
 
             // Simplificación inicial: esperar 'JOIN <nombre_tabla>'
-            if (i < tamano && strcmp(analisis[i], "on") != 0 && strcmp(analisis[i], "where") != 0 && strcmp(analisis[i], "|") != 0) {
+            if (i < tamano && strcmp(analisis[i], "ON") != 0 && strcmp(analisis[i], "WHERE") != 0 && strcmp(analisis[i], "|") != 0) {
                 strncpy(tabla_join, analisis[i], sizeof(tabla_join) - 1);
                 tabla_join[sizeof(tabla_join) - 1] = '\0';
                 i++;
             }
             // Después del nombre de la tabla de JOIN, podría venir un 'ON'
-            if (i < tamano && strcmp(analisis[i], "on") == 0) {
+            if (i < tamano && strcmp(analisis[i], "ON") == 0) {
                 usar_condicion_join = true;
                 i++; // Saltar "on"
                 if (i + 2 < tamano) { // Esperar col1 op col2
@@ -391,7 +391,7 @@ void analizarComandos() {
             }
 
 
-        } else if (strcmp(analisis[i], "where") == 0) {
+        } else if (strcmp(analisis[i], "WHERE") == 0) {
             usarCondiciones = true;
             i++;
         } else if (strcmp(analisis[i], "|") == 0) {
@@ -458,7 +458,7 @@ void imprimirArbolSemantico() {
 void validarArchivo() {
     char ruta_entrada[200];
     // Construye la ruta del archivo de entrada
-    snprintf(ruta_entrada, sizeof(ruta_entrada), "%s/%s.txt", obtenerRutaBase(), obtenerNombreArchivo());
+    snprintf(ruta_entrada, sizeof(ruta_entrada), "%s/tablas/%s.txt", obtenerRutaBase(), obtenerNombreArchivo());
 
     // Abre el archivo de entrada
     obtenerArchivoEntrada().open(ruta_entrada);
@@ -816,7 +816,7 @@ void ingresar() {
 
     // Abrir archivo de la tabla izquierda
     char ruta_archivo_izq[200];
-    snprintf(ruta_archivo_izq, sizeof(ruta_archivo_izq), "%s/%s.txt", obtenerRutaBase(), NArchivo);
+    snprintf(ruta_archivo_izq, sizeof(ruta_archivo_izq), "%s/tablas/%s.txt", obtenerRutaBase(), NArchivo);
     std::ifstream archivo_izq(ruta_archivo_izq);
 
     if (!archivo_izq.is_open()) {
@@ -982,65 +982,65 @@ void ingresar() {
 
                 if (cumple_join) {
                     // --- EVALUAR CONDICIONES WHERE ADICIONALES (si las hay) ---
-                    bool cumple_condiciones_where = true;
+                    bool cumple_condiciones_WHERE = true;
                     if (usarCondiciones) {
-                        for (int c = 0; c < numCondiciones && cumple_condiciones_where; ++c) {
-                            char* valor_celda_where = nullptr;
-                            char tipo_columna_where[MAX_LEN] = "";
-                            int idx_col_where = -1;
+                        for (int c = 0; c < numCondiciones && cumple_condiciones_WHERE; ++c) {
+                            char* valor_celda_WHERE = nullptr;
+                            char tipo_columna_WHERE[MAX_LEN] = "";
+                            int idx_col_WHERE = -1;
 
                             // Buscar la columna de la condición WHERE en la tabla izquierda
                             for(int i=0; i < num_columnas_registro; ++i){
                                 if(strcmp(condiciones_col[c], columnas_registro[i]) == 0){
-                                    idx_col_where = i;
-                                    valor_celda_where = campos_izq[i];
-                                    strcpy(tipo_columna_where, T_Datos[i]);
+                                    idx_col_WHERE = i;
+                                    valor_celda_WHERE = campos_izq[i];
+                                    strcpy(tipo_columna_WHERE, T_Datos[i]);
                                     break;
                                 }
                             }
                             // Si no está en la izquierda, buscar en la derecha
-                            if(idx_col_where == -1){
+                            if(idx_col_WHERE == -1){
                                 for(int i=0; i < num_columnas_registro_join; ++i){
                                     if(strcmp(condiciones_col[c], columnas_registro_join[i]) == 0){
-                                        idx_col_where = i;
-                                        valor_celda_where = campos_der[i];
-                                        strcpy(tipo_columna_where, T_Datos_join[i]);
+                                        idx_col_WHERE = i;
+                                        valor_celda_WHERE = campos_der[i];
+                                        strcpy(tipo_columna_WHERE, T_Datos_join[i]);
                                         break;
                                     }
                                 }
                             }
 
-                            if (valor_celda_where != nullptr) {
+                            if (valor_celda_WHERE != nullptr) {
                                 char* operador = condiciones_op[c];
                                 char* valor_cond = condiciones_val[c];
                                 char tipo_actual_str[MAX_LEN];
-                                strcpy(tipo_actual_str, tipo_columna_where);
+                                strcpy(tipo_actual_str, tipo_columna_WHERE);
                                 for(int i = 0; tipo_actual_str[i]; i++){
                                   tipo_actual_str[i] = tolower(tipo_actual_str[i]);
                                 }
 
                                 if (strcmp(tipo_actual_str, "int") == 0) {
-                                    if (esEntero(valor_celda_where) && esEntero(valor_cond)) {
-                                        int val_celda_int = convertirAEntero(valor_celda_where);
+                                    if (esEntero(valor_celda_WHERE) && esEntero(valor_cond)) {
+                                        int val_celda_int = convertirAEntero(valor_celda_WHERE);
                                         int val_cond_int = convertirAEntero(valor_cond);
-                                        if (strcmp(operador, "=") == 0) { if (!(val_celda_int == val_cond_int)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "<") == 0) { if (!(val_celda_int < val_cond_int)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, ">") == 0) { if (!(val_celda_int > val_cond_int)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "<=") == 0) { if (!(val_celda_int <= val_cond_int)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, ">=") == 0) { if (!(val_celda_int >= val_cond_int)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(val_celda_int != val_cond_int)) cumple_condiciones_where = false; }
-                                    } else { cumple_condiciones_where = false; }
+                                        if (strcmp(operador, "=") == 0) { if (!(val_celda_int == val_cond_int)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "<") == 0) { if (!(val_celda_int < val_cond_int)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, ">") == 0) { if (!(val_celda_int > val_cond_int)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "<=") == 0) { if (!(val_celda_int <= val_cond_int)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, ">=") == 0) { if (!(val_celda_int >= val_cond_int)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(val_celda_int != val_cond_int)) cumple_condiciones_WHERE = false; }
+                                    } else { cumple_condiciones_WHERE = false; }
                                 } else if (strcmp(tipo_actual_str, "float") == 0) {
-                                    if (esFlotante(valor_celda_where) && esFlotante(valor_cond)) {
-                                        double val_celda_float = atof(valor_celda_where);
+                                    if (esFlotante(valor_celda_WHERE) && esFlotante(valor_cond)) {
+                                        double val_celda_float = atof(valor_celda_WHERE);
                                         double val_cond_float = atof(valor_cond);
-                                        if (strcmp(operador, "=") == 0) { if (!(val_celda_float == val_cond_float)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "<") == 0) { if (!(val_celda_float < val_cond_float)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, ">") == 0) { if (!(val_celda_float > val_cond_float)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "<=") == 0) { if (!(val_celda_float <= val_cond_float)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, ">=") == 0) { if (!(val_celda_float >= val_cond_float)) cumple_condiciones_where = false; }
-                                        else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(val_celda_float != val_cond_float)) cumple_condiciones_where = false; }
-                                    } else { cumple_condiciones_where = false; }
+                                        if (strcmp(operador, "=") == 0) { if (!(val_celda_float == val_cond_float)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "<") == 0) { if (!(val_celda_float < val_cond_float)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, ">") == 0) { if (!(val_celda_float > val_cond_float)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "<=") == 0) { if (!(val_celda_float <= val_cond_float)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, ">=") == 0) { if (!(val_celda_float >= val_cond_float)) cumple_condiciones_WHERE = false; }
+                                        else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(val_celda_float != val_cond_float)) cumple_condiciones_WHERE = false; }
+                                    } else { cumple_condiciones_WHERE = false; }
                                 } else if (strcmp(tipo_actual_str, "str") == 0 || strcmp(tipo_actual_str, "string") == 0) {
                                     char temp_valor_cond[MAX_LEN];
                                     strncpy(temp_valor_cond, valor_cond, MAX_LEN -1);
@@ -1050,20 +1050,20 @@ void ingresar() {
                                         temp_valor_cond[len - 1] = '\0';
                                         memmove(temp_valor_cond, temp_valor_cond + 1, len - 1);
                                     }
-                                    if (strcmp(operador, "=") == 0) { if (!(strcmp(valor_celda_where, temp_valor_cond) == 0)) cumple_condiciones_where = false; }
-                                    else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(strcmp(valor_celda_where, temp_valor_cond) != 0)) cumple_condiciones_where = false; }
-                                    else { std::cerr << "Advertencia: Operador '" << operador << "' no soportado para tipo STRING en WHERE.\n"; cumple_condiciones_where = false; }
-                                } else { cumple_condiciones_where = false; }
+                                    if (strcmp(operador, "=") == 0) { if (!(strcmp(valor_celda_WHERE, temp_valor_cond) == 0)) cumple_condiciones_WHERE = false; }
+                                    else if (strcmp(operador, "!=") == 0 || strcmp(operador, "<>") == 0) { if (!(strcmp(valor_celda_WHERE, temp_valor_cond) != 0)) cumple_condiciones_WHERE = false; }
+                                    else { std::cerr << "Advertencia: Operador '" << operador << "' no soportado para tipo STRING en WHERE.\n"; cumple_condiciones_WHERE = false; }
+                                } else { cumple_condiciones_WHERE = false; }
                             } else {
                                 // Columna de WHERE no encontrada en ninguna de las tablas del JOIN
-                                cumple_condiciones_where = false;
+                                cumple_condiciones_WHERE = false;
                                 std::cerr << "Error: Columna '" << condiciones_col[c] << "' en WHERE no encontrada en las tablas del JOIN.\n";
                             }
                         }
                     }
 
                     // Si cumple JOIN y WHERE, construir la fila de salida
-                    if (cumple_condiciones_where) {
+                    if (cumple_condiciones_WHERE) {
                         resultado_fila[0] = '\0'; // Reiniciar la fila
                         num_resultado_cols = 0;
                         for (int i = 0; i < num_columnas_seleccionadas; ++i) {
@@ -1229,7 +1229,7 @@ void ingresar() {
     // Abrir relaciones_tablas.txt en modo de añadir para registrar la nueva consulta
     std::fstream archivo_rel_escritura;
     char ruta_relaciones[200];
-    snprintf(ruta_relaciones, sizeof(ruta_relaciones), "%s/relaciones_tablas.txt", obtenerRutaBase());
+    snprintf(ruta_relaciones, sizeof(ruta_relaciones), "%s/tablas/relaciones_tablas.txt", obtenerRutaBase());
 
     archivo_rel_escritura.open(ruta_relaciones, std::ios::app);
     if (!archivo_rel_escritura.is_open()) {
@@ -1294,7 +1294,7 @@ void ingresar() {
 
 void abrirRelacion(bool leer) {
     char ruta_relacion[200];
-    snprintf(ruta_relacion, sizeof(ruta_relacion), "%s/relaciones_tablas.txt", obtenerRutaBase());
+    snprintf(ruta_relacion, sizeof(ruta_relacion), "%s/tablas/relaciones_tablas.txt", obtenerRutaBase());
 
     if (leer) {
         obtenerArchivoRelaciones().open(ruta_relacion, std::ios::in);

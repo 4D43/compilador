@@ -280,7 +280,7 @@ def generar_sql(estructura):
 
     if condiciones:
         sql += " WHERE " + " AND ".join(condiciones)
-    return sql + ";"
+    return sql 
 
 # === Compilador Principal ===
 def compilador_nl2sql_texto(texto):

@@ -18,7 +18,6 @@ fd#id#int#nombre#str#edad#int#dept#string#
 fd#nombre#str#
 fd#nombre#str#
 fd#nombre#str
-f#id#int#nombre#str#edad#int#dept#string#�a#�v�^L�a#*�2v��a#��2v
 fd#edad#int#nombre#str#id#int
 todos_clientes#id#int#nombre#str#edad#int#dept#string
 nombres_edades#nombre#str#edad#int
