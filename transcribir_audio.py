@@ -1,3 +1,25 @@
+import sys
+import types
+
+# Crear un "numba falso" para que Whisper no falle
+fake_numba = types.ModuleType("numba")
+
+# jit falso: simplemente devuelve la función sin modificarla
+def fake_jit(*args, **kwargs):
+    def decorator(func):
+        return func
+    return decorator
+
+fake_numba.jit = fake_jit
+fake_numba.cuda = types.ModuleType("numba.cuda")
+fake_numba.core = types.ModuleType("numba.core")
+
+sys.modules["numba"] = fake_numba
+sys.modules["numba.cuda"] = fake_numba.cuda
+sys.modules["numba.core"] = fake_numba.core
+
+import whisper
+
 import whisper
 import os
 
