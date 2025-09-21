@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Grafo</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1, p {
+            text-align: center;
+            max-width: 800px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #command-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        #execute-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #4e79a7;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #execute-button:hover {
+            background-color: #3b608a;
+        }
+        #status-message {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        svg {
+            border: 2px solid #ccc;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            max-height: 600px;
+        }
+        .node {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+        }
+        .process {
+            fill: #4e79a7;
+            stroke: #1f3b5c;
+        }
+        .resource {
+            fill: #f28e2b;
+            stroke: #a65c00;
+        }
+        .request-link {
+            stroke: #e15759;
+            stroke-dasharray: 5, 5;
+        }
+        .assignment-link {
+            stroke: #4e79a7;
+        }
+        .node-text {
+            pointer-events: none;
+            text-anchor: middle;
+            font-size: 12px;
+            fill: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visualizador de Grafo de Asignación y Solicitudes</h1>
+    <p>Escribe un comando de lenguaje natural y presiona "Simular" para ver el efecto en el grafo.</p>
+    <div class="controls">
+        <textarea id="command-input" rows="2" placeholder="Ejemplo: crear proceso 3"></textarea>
+        <button id="execute-button">Simular</button>
+        <span id="status-message"></span>
+    </div>
+    <div id="graph-container"></div>
+
+    <script>
+        const width = 800;
+        const height = 600;
+
+        const svg = d3.select("#graph-container")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        const simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        function renderGraph(graph) {
+            svg.selectAll("*").remove(); // Limpiar el SVG anterior
+
+            const nodes = graph.nodes;
+            const links = graph.edges.map(d => ({...d}));
+            
+            const link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("class", d => `link ${d.type}-link`)
+                .attr("marker-end", "url(#arrowhead)");
+
+            const node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("r", 20)
+                .attr("class", d => `node ${d.group}`)
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+            
+            const labels = svg.append("g")
+                .attr("class", "labels")
+                .selectAll("text")
+                .data(nodes)
+                .enter().append("text")
+                .attr("class", "node-text")
+                .text(d => d.id)
+                .attr("dominant-baseline", "middle");
+
+            const arrowHeads = svg.append("defs").selectAll("marker")
+                .data(["arrowhead"])
+                .enter().append("marker")
+                .attr("id", String)
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 25)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "#999");
+
+            simulation.nodes(nodes).on("tick", ticked);
+            simulation.force("link").links(links);
+
+            function ticked() {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+                
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+                
+                labels
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y);
+            }
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }
+
+        async function postCommandAndFetchGraphData(command) {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = 'Procesando comando...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/execute_command', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ command: command })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Respuesta del servidor:", data);
+                
+                // Actualizar el estado del grafo
+                renderGraph(data.graph_data);
+                
+                // Mostrar mensaje de éxito o advertencia
+                statusMessage.textContent = data.message;
+                
+            } catch (error) {
+                console.error("Error al ejecutar el comando:", error);
+                statusMessage.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        document.getElementById('execute-button').addEventListener('click', () => {
+            const command = document.getElementById('command-input').value;
+            if (command.trim()) {
+                postCommandAndFetchGraphData(command);
+            }
+        });
+
+        // Cargar el grafo inicial al cargar la página
+        async function fetchInitialGraph() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/graph_data');
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                renderGraph(data);
+            } catch (error) {
+                console.error("Error al obtener el grafo inicial:", error);
+            }
+        }
+
+        fetchInitialGraph();
+    </script>
+</body>
+</html>
