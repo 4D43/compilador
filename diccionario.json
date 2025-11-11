@@ -1,0 +1,103 @@
+{
+    "entidades": {
+        "clientes": [
+            "id",
+            "nombre",
+            "edad",
+            "correo"
+        ],
+        "productos": [
+            "id",
+            "nombre",
+            "precio",
+            "stock"
+        ],
+        "ventas": [
+            "id",
+            "fecha",
+            "cantidad",
+            "monto"
+        ]
+    },
+    "acciones": {
+        "mostrar": [
+            "select"
+        ],
+        "listar": [
+            "select"
+        ],
+        "buscar": [
+            "select"
+        ],
+        "insertar": [
+            "insert"
+        ],
+        "agregar": [
+            "insert"
+        ],
+        "eliminar": [
+            "delete"
+        ],
+        "borrar": [
+            "delete"
+        ],
+        "actualizar": [
+            "update"
+        ]
+    },
+    "comparadores": {
+        "mayor que": ">",
+        "menor que": "<",
+        "igual a": "=",
+        "diferente de": "!=",
+        "mayor o igual que": ">=",
+        "menor o igual que": "<="
+    },
+    "palabras": [
+        "!",
+        "<",
+        "=",
+        ">",
+        "age",
+        "cabin",
+        "cantidad",
+        "clientes",
+        "correo",
+        "delete",
+        "departamento",
+        "dept",
+        "edad",
+        "embarked",
+        "empleados",
+        "fare",
+        "fd",
+        "fds",
+        "fecha",
+        "float",
+        "id",
+        "insert",
+        "int",
+        "monto",
+        "name",
+        "nombre",
+        "parch",
+        "passengerid",
+        "pclass",
+        "precio",
+        "productos",
+        "puesto",
+        "salario",
+        "select",
+        "sex",
+        "sibsp",
+        "stock",
+        "str",
+        "string",
+        "students",
+        "survived",
+        "ticket",
+        "titanic",
+        "update",
+        "ventas"
+    ]
+}

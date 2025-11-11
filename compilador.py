@@ -4,68 +4,11 @@ import string
 from datetime import datetime
 import collections
 from difflib import get_close_matches
-
-# --- Definición del Nodo Trie ---
-class TrieNode:
-    def __init__(self):
-        self.children = collections.defaultdict(TrieNode)
-        self.is_end_of_word = False
-
-# --- Estructura de Datos Trie ---
-class Trie:
-    def __init__(self):
-        self.root = TrieNode()
-
-    def insert(self, word):
-        node = self.root
-        for char in word:
-            node = node.children[char]
-        node.is_end_of_word = True
-
-    def search(self, word):
-        node = self.root
-        for char in word:
-            if char not in node.children:
-                return False
-            node = node.children[char]
-        return node.is_end_of_word
-
-    def starts_with(self, prefix):
-        node = self.root
-        for char in prefix:
-            if char not in node.children:
-                return False
-            node = node.children[char]
-        return True
-
-    # Método para obtener todas las palabras en el Trie
-    def get_all_words(self, node=None, prefix="", words=None):
-        if node is None:
-            node = self.root
-        if words is None:
-            words = []
-
-        if node.is_end_of_word:
-            words.append(prefix)
-
-        for char, child_node in node.children.items():
-            self.get_all_words(child_node, prefix + char, words)
-        return words
-
-    def print_all_words(self):
-            
-            print("\n--- Palabras en el Trie ---")
-            words = self.get_all_words() # Reutilizamos el método existente
-            if not words:
-                print("El Trie está vacío.")
-                return
-
-            for word in sorted(words): # Opcional: ordenar alfabéticamente
-                print(word)
-            print("---------------------------")
+from Trie import Trie, TrieNode
+from fuzzy_dict import sincronizar_diccionario, generar_trie_desde_diccionario, actualizar_aprendizaje, revisar_palabras
 
 # --- Función para Generar el Conjunto de Datos y Construir el Trie ---
-def generate_dataset_and_trie(file_path):
+'''def generate_dataset_and_trie(file_path):
     """
     Genera un conjunto de palabras únicas a partir de un archivo de texto,
     excluyendo palabras clave comunes de tipos de datos, y las almacena en un Trie.
@@ -111,7 +54,7 @@ def generate_dataset_and_trie(file_path):
         return None
 
     return unique_words_trie
-    
+ '''  
 # === Formatos de fecha compatibles ===
 FORMATOS_FECHA = [ #
     r"\d{4}-\d{2}-\d{2}",              # 2025-07-21
@@ -140,6 +83,7 @@ def unir_fecha(tokens, inicio): #
 
 # === Análisis Léxico ===
 def analisis_lexico(texto): #
+    texto = revisar_palabras(texto, diccionario_valido_trie.get_all_words())
     texto = texto.lower() #
     palabras = texto.split() #
     palabras = [p.strip(string.punctuation) for p in palabras if p.strip(string.punctuation)] #
@@ -567,7 +511,12 @@ if __name__ == "__main__":
             f.write("cantidad\n") # Añadimos una columna de ejemplo para probar
 
     # Generar el Trie con las tablas y columnas válidas de la DB
-    diccionario_valido_trie = generate_dataset_and_trie(input_db_schema_file)
+    #diccionario_valido_trie = generate_dataset_and_trie(input_db_schema_file)
+    # sincroniza el vocabulario con el archivo de relaciones
+    sincronizar_diccionario()
+
+    # genera el Trie solo con el vocabulario final del JSON
+    diccionario_valido_trie = generar_trie_desde_diccionario()
 
     if diccionario_valido_trie:
         print(f"\nPalabras válidas de la DB almacenadas en el Trie:")
