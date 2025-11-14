@@ -1,10 +1,9 @@
 import sys
 import types
+import os
 
-# Crear un "numba falso" para que Whisper no falle
 fake_numba = types.ModuleType("numba")
 
-# jit falso: simplemente devuelve la función sin modificarla
 def fake_jit(*args, **kwargs):
     def decorator(func):
         return func
@@ -20,37 +19,46 @@ sys.modules["numba.core"] = fake_numba.core
 
 import whisper
 
-import whisper
-import os
+from fuzzy_dict1 import crear_prompt_para_whisper
 
-ruta_audio = "grabacion.wav"
 
-def transcribir_audio(ruta_audio):
+def transcribir_audio(ruta_audio, prompt_contexto):
     if not os.path.exists(ruta_audio):
         print(f"Error: El archivo de audio no se encontró en '{ruta_audio}'")
         return ""
 
-    # try: # Comenta esta línea
-    print("Cargando el modelo Whisper (esto puede tardar la primera vez)...")
-    model = whisper.load_model("base")
-    print("Modelo Whisper cargado. Transcribiendo audio...")
+    try:
+        print("Cargando el modelo Whisper (esto puede tardar la primera vez)...")
+        model = whisper.load_model("base")
+        print("Modelo Whisper cargado. Transcribiendo audio...")
 
-    result = model.transcribe(ruta_audio)
+        result = model.transcribe(
+            ruta_audio,
+            prompt=prompt_contexto,
+            language="es",
+            fp16=False
+        )
 
-    transcripcion = result["text"]
-    print("\n--- Transcripción Completa ---")
-    print(transcripcion)
-    return transcripcion
+        texto = result["text"]
+        print("\n--- Transcripción Completa ---")
+        print(texto)
+        return texto
 
-    # except Exception as e: # Comenta esta línea
-    #    print(f"Ocurrió un error durante la transcripción: {e}") # Comenta esta línea
-    #    return ""
+    except Exception as e:
+        print(f"Ocurrió un error durante la transcripción: {e}")
+        return ""
+
 
 if __name__ == "__main__":
-    nombre_archivo_audio = "grabacion.wav"
-    transcripcion_final = transcribir_audio(nombre_archivo_audio)
+    prompt_final = crear_prompt_para_whisper()
 
-    if transcripcion_final:
+    nombre_archivo_audio = r"C:\Users\S0\PROYECTOS\compilad\compilador\g2.m4a"
+    texto = transcribir_audio(nombre_archivo_audio, prompt_final)
+
+    if texto:
         with open("transcripcion.txt", "w", encoding="utf-8") as f:
-            f.write(transcripcion_final)
+            f.write(texto)
+
         print("\nTranscripción guardada en 'transcripcion.txt'")
+    else:
+        print("No se generó ninguna transcripción.")
