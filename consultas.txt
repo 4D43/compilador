@@ -1,0 +1,12 @@
+Muéstrame las ventas con sus clientes
+Muéstrame los productos con sus ventas
+Muéstrame los clientes con sus ventas donde monto mayor a 100
+Dame las ventas con el nombre del cliente
+Muéstrame las ventas con los productos vendidos
+Dame los clientes que compraron productos con precio mayor a 50
+Muéstrame los empleados con su departamento
+Muéstrame las ventas con el cliente y el producto
+Cuántas ventas tiene cada cliente
+Ordena los clientes por el total de sus ventas
+Muéstrame las ventas del producto laptop con el nombre del cliente
+Dame los clientes con id menor a 5

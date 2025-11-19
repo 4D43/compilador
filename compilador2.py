@@ -10,19 +10,11 @@ from Trie import Trie, TrieNode
 from fuzzy_dict1 import sincronizar_diccionario, generar_trie_desde_diccionario, crear_prompt_para_whisper
 from transcribir_audio import transcribir_audio
 
-# Importar Whisper aquí para pasarlo al transcriptor
-# (El parche de numba debe estar en transcribir_audio.py)
 import whisper 
 
-# =====================================================================
-# MÓDULO 3: FASES DEL COMPILADOR (P1 Simulado + P2 Real)
-# =====================================================================
-
-# --- 3.1: FASE 1: Análisis Léxico (Persona 1 - Simulado) ---
-# (La Persona 1 te entregará el código real de esta función)
+# --- 3.1: FASE 1: Análisis Léxico (P1) ---
 def analisis_lexico(texto_transcrito):
     """
-    (SIMULACIÓN DE PERSONA 1)
     FASE 1: ANÁLISIS LÉXICO
     Toma el texto de Whisper, lo limpia y lematiza.
     """
@@ -48,7 +40,7 @@ def analisis_lexico(texto_transcrito):
     print(f"(P1) Tokens Lematizados: {tokens_lematizados}")
     return tokens_lematizados
 
-# --- 3.2: FASE 2: Análisis Sintáctico (Persona 1 - Simulado) ---
+# --- 3.2: FASE 2: Análisis Sintáctico ---
 
 # (P1) Define los patrones de consulta (Trie de Estructuras)
 PATRONES_TRIE = {
@@ -61,7 +53,8 @@ PATRONES_TRIE = {
     },
     "cuánto": {
         "__meta__": {"tipo_siguiente": "ENTIDAD", "accion": "COUNT", "select": "COUNT(*)"}
-    }
+    },
+    "ordenar_por": {"columna": "edad", "direccion": "ASC"}
 }
 CONECTORES_CONDICION = {"donde", "que"} # Simplificado
 
@@ -198,150 +191,201 @@ MAPA_LEMA_A_TABLA = {
     "titanic": "titanic"
 }
 
-def cargar_esquema_db():
+def cargar_esquema_db(relaciones_texto):
     """
-    (TU TAREA 2 - Utilidad)
-    ¡MODIFICADO! Lee 'relaciones_tablas.txt' directamente.
+    Carga el esquema y DETECTA RELACIONES (Foreign Keys).
+    Asume convención de nombres: 'tabla_id' apunta a 'tabla'.
     """
     esquema = {}
-    archivo_esquema = "relaciones_tablas.txt"
-    
-    if not os.path.exists(archivo_esquema):
-        print(f"--- (P2) Error: No se encontró '{archivo_esquema}' ---")
-        return esquema
+    relaciones_fk = {} # Mapa de quién apunta a quién
 
-    try:
-        with open(archivo_esquema, "r", encoding="utf-8") as f:
-            for linea in f:
-                partes = linea.strip().split('#')
-                if len(partes) < 2: continue
-                
-                nombre_tabla = partes[0]
-                columnas = {}
-                # Lee las columnas de 2 en 2 (nombre, tipo)
-                for i in range(1, len(partes), 2):
-                    if i + 1 < len(partes):
-                        columnas[partes[i]] = partes[i+1]
-                
-                if nombre_tabla not in esquema:
-                    esquema[nombre_tabla] = {}
-                esquema[nombre_tabla].update(columnas)
-                
-    except Exception as e:
-        print(f"--- (P2) Error leyendo el esquema: {e} ---")
+    for linea in relaciones_texto.strip().split('\n'):
+        partes = linea.split('#')
+        if len(partes) < 2: continue
         
-    print(f"--- (P2) Esquema de DB Cargado desde archivo: {list(esquema.keys())} ---")
-    return esquema
+        nombre_tabla = partes[0]
+        columnas = {}
+        
+        # Leer columnas
+        for i in range(1, len(partes), 2):
+            if i + 1 < len(partes):
+                col_nombre = partes[i]
+                col_tipo = partes[i+1]
+                columnas[col_nombre] = col_tipo
+                
+                # --- DETECCIÓN DE JOIN (FK) ---
+                # Si la columna termina en '_id' (ej: cliente_id)
+                # Asumimos que apunta a la tabla 'clientes'
+                if col_nombre.endswith("_id"):
+                    tabla_destino = col_nombre[:-3] + "s" # cliente -> clientes
+                    # Guardamos la relación: "ventas" -> apunta a -> "clientes"
+                    if nombre_tabla not in relaciones_fk: relaciones_fk[nombre_tabla] = []
+                    relaciones_fk[nombre_tabla].append({
+                        "fk": col_nombre,       # cliente_id
+                        "destino": tabla_destino # clientes
+                    })
 
-def analisis_semantico_y_generacion(estructura_logica, esquema_db):
+        if nombre_tabla not in esquema:
+            esquema[nombre_tabla] = {}
+        esquema[nombre_tabla].update(columnas)
+        
+    print(f"--- (P2) Esquema Cargado. Relaciones detectadas: {len(relaciones_fk)} tablas con FKs ---")
+    return esquema, relaciones_fk
+def generar_camino_joins(tablas_necesarias, relaciones_fk):
     """
-    (TU TAREA 2 - PRINCIPAL)
-    FASE 3: ANÁLISIS SEMÁNTICO Y GENERACIÓN DE CÓDIGO
-    Valida el "Contrato" contra el esquema de la DB y genera el SQL.
+    Genera la cláusula FROM ... JOIN ... ON ...
+    Intenta conectar todas las tablas necesarias usando las FK detectadas.
     """
-    print("\n--- FASE 3: Análisis Semántico y Generación de Código ---")
+    lista_tablas = list(tablas_necesarias)
+    if not lista_tablas: return ""
     
-    # --- 1. Análisis Semántico (Validación) ---
-    entidad_lematizada = estructura_logica.get("entidad")
-    if not entidad_lematizada:
-        return "-- Error Semántico: No se especificó ninguna entidad (tabla)."
-
-    # Intentos para normalizar la entidad (ej: cliente -> clientes)
-    nombre_tabla_real = MAPA_LEMA_A_TABLA.get(entidad_lematizada, entidad_lematizada)
-
-    # Si no está, intentar autocorregir:
-    if nombre_tabla_real not in esquema_db:
-        # 1) probar con 's' al final (cliente -> clientes)
-        cand = entidad_lematizada + "s"
-        if cand in esquema_db:
-            nombre_tabla_real = cand
-        else:
-            # 2) probar quitando 's' final (clientes -> cliente)
-            cand2 = entidad_lematizada.rstrip("s")
-            if cand2 in esquema_db:
-                nombre_tabla_real = cand2
-            else:
-                # 3) buscar coincidencias cercanas entre claves del esquema (ej: cliente -> clientes)
-                posibles = get_close_matches(entidad_lematizada, esquema_db.keys(), n=1, cutoff=0.6)
-                if posibles:
-                    nombre_tabla_real = posibles[0]
-                else:
-                    # 4) buscar forma plural o substring dentro de los nombres de las tablas
-                    for t in esquema_db.keys():
-                        if entidad_lematizada == t or entidad_lematizada in t or (entidad_lematizada + "s") in t:
-                            nombre_tabla_real = t
-                            break
-
-    if nombre_tabla_real not in esquema_db:
-        sugerencia = get_close_matches(nombre_tabla_real, esquema_db.keys(), n=1, cutoff=0.7)
-        sug_texto = f" Quizás quisiste decir: {sugerencia[0]}?" if sugerencia else ""
-        return f"-- Error Semántico: La tabla '{nombre_tabla_real}' no existe.{sug_texto}"
+    # Empezamos con la primera tabla (normalmente la que tiene más FKs, como 'ventas')
+    # Ordenamos para que las tablas "hechos" (con FKs) vayan primero
+    lista_tablas.sort(key=lambda t: 1 if t in relaciones_fk else 0, reverse=True)
     
-    columnas_tabla = esquema_db[nombre_tabla_real]
-    atributos_sql = []
+    tabla_base = lista_tablas[0]
+    clausula_from = f"FROM {tabla_base}"
+    tablas_unidas = {tabla_base}
     
-    accion = estructura_logica.get("accion", "SELECT")
-    # Si la lista existe pero está vacía, usamos "*"
-    atributos_a_mostrar = estructura_logica.get("atributos_mostrar") or ["*"]
-
-    if accion == "COUNT":
-        if len(atributos_a_mostrar) > 1 or atributos_a_mostrar[0].upper() != "COUNT(*)":
-             return f"-- Error Semántico: No se puede usar 'COUNT' con atributos específicos (ej: '{atributos_a_mostrar[0]}'). Use 'mostrar' en su lugar."
-        campos = "COUNT(*)"
-    
-    else: # (accion == "SELECT")
-        for attr in atributos_a_mostrar:
-            if attr == "*" or attr.upper().startswith("COUNT("):
-                atributos_sql.append(attr)
-                continue
+    # Intentamos unir el resto
+    for tabla_objetivo in lista_tablas[1:]:
+        if tabla_objetivo in tablas_unidas: continue
+        
+        unido = False
+        # 1. Intento Directo: ¿La tabla base apunta a la objetivo?
+        if tabla_base in relaciones_fk:
+            for relacion in relaciones_fk[tabla_base]:
+                if relacion["destino"] == tabla_objetivo:
+                    clausula_from += f" JOIN {tabla_objetivo} ON {tabla_base}.{relacion['fk']} = {tabla_objetivo}.id"
+                    tablas_unidas.add(tabla_objetivo)
+                    unido = True
+                    break
+        
+        # 2. Intento Inverso: ¿La tabla objetivo apunta a la base?
+        if not unido and tabla_objetivo in relaciones_fk:
+            for relacion in relaciones_fk[tabla_objetivo]:
+                if relacion["destino"] == tabla_base:
+                    clausula_from += f" JOIN {tabla_objetivo} ON {tabla_objetivo}.{relacion['fk']} = {tabla_base}.id"
+                    tablas_unidas.add(tabla_objetivo)
+                    unido = True
+                    break
+        
+        if not unido:
+            # Si fallamos, hacemos producto cartesiano (o podríamos buscar tabla puente)
+            clausula_from += f", {tabla_objetivo} -- ( No se encontró JOIN directo)"
             
-            if attr not in columnas_tabla:
-                sugerencia = get_close_matches(attr, columnas_tabla.keys(), n=1, cutoff=0.7)
-                sug_texto = f" Quizás quisiste decir: {sugerencia[0]}?" if sugerencia else ""
-                return f"-- Error Semántico: La columna '{attr}' no existe en '{nombre_tabla_real}'.{sug_texto}"
-            
-            atributos_sql.append(attr)
-        campos = ", ".join(atributos_sql) if atributos_sql else "*"
-
-    sql = f"SELECT {campos} FROM {nombre_tabla_real}"
-
-    # --- 2. Generación de SQL (WHERE) ---
-    clausulas_where = []
+    return clausula_from
+def analisis_semantico_y_generacion(estructura_logica, esquema_db, relaciones_fk):
+    print("\n--- FASE 3: Generación SQL Robusta (JOINs/GROUP/ORDER) ---")
+    
+    # 1. Recopilar todas las columnas solicitadas para saber qué tablas necesitamos
+    columnas_requeridas = []
+    
+    # Columnas del SELECT
+    for col in estructura_logica.get("atributos_mostrar", []):
+        if col != "*" and "COUNT" not in col: columnas_requeridas.append(col)
+        
+    # Columnas del WHERE
     for cond in estructura_logica.get("condiciones", []):
-        attr = cond["atributo"]
-        op = cond["operador"]
-        val = str(cond["valor"])
+        columnas_requeridas.append(cond["atributo"])
+        
+    # Columnas del GROUP BY y ORDER BY
+    if estructura_logica.get("agrupar_por"):
+        columnas_requeridas.extend(estructura_logica["agrupar_por"])
+    if estructura_logica.get("ordenar_por"):
+        columnas_requeridas.append(estructura_logica["ordenar_por"]["columna"])
 
-        if attr not in columnas_tabla:
-            sugerencia = get_close_matches(attr, columnas_tabla.keys(), n=1, cutoff=0.7)
-            sug_texto = f" Quizás quisiste decir: {sugerencia[0]}?" if sugerencia else ""
-            return f"-- Error Semántico: La columna de condición '{attr}' no existe en '{nombre_tabla_real}'.{sug_texto}"
+    # 2. Identificar tablas involucradas
+    tablas_involucradas = set()
+    entidad_principal = estructura_logica.get("entidad")
+    # Mapeo rápido
+    nombre_real = MAPA_LEMA_A_TABLA.get(entidad_principal, entidad_principal)
+    if nombre_real in esquema_db:
+        tablas_involucradas.add(nombre_real)
 
-        tipo_dato = columnas_tabla.get(attr)
-        # validar si val es dígito o número con punto
-        if re.fullmatch(r"\d+(\.\d+)?", val):
-            formatted_val = val
+    # Buscar a qué tabla pertenece cada columna requerida
+    columna_a_tabla = {} # Mapa: 'nombre' -> 'clientes'
+    
+    for col in columnas_requeridas:
+        encontrado = False
+        # Primero buscar en la tabla principal (prioridad)
+        if nombre_real and col in esquema_db.get(nombre_real, {}):
+             columna_a_tabla[col] = nombre_real
+             encontrado = True
         else:
-            # eliminar comillas sobrantes y envolver entre comillas simples
-            stripped = val.strip("\"' ")
-            formatted_val = f"'{stripped}'"
-
-        if tipo_dato in {"str", "string", "date"} and not (formatted_val.startswith("'") and formatted_val.endswith("'")):
-            formatted_val = f"'{stripped}'"
-
-        clausulas_where.append(f"{attr} {op} {formatted_val}")
+            # Buscar en todo el esquema
+            for tabla, cols in esquema_db.items():
+                if col in cols:
+                    columna_a_tabla[col] = tabla
+                    tablas_involucradas.add(tabla)
+                    encontrado = True
+                    break
         
-    if clausulas_where:
-        sql += " WHERE " + " AND ".join(clausulas_where)
-        
-    print("--- (P2) Validación Semántica y Generación OK ---")
+        if not encontrado:
+            return f"-- Error Semántico: Columna '{col}' no encontrada en la DB."
+
+    # 3. Generar cláusula FROM con JOINS automáticos
+    if not tablas_involucradas:
+        return "-- Error: No se identificaron tablas."
+    
+    sql_from = generar_camino_joins(tablas_involucradas, relaciones_fk)
+
+    # 4. Generar SELECT
+    select_cols = []
+    accion = estructura_logica.get("accion", "SELECT")
+    
+    if accion == "COUNT" and not estructura_logica.get("agrupar_por"):
+        select_cols = ["COUNT(*)"]
+    else:
+        # Si hay GROUP BY, aseguramos que las columnas de grupo estén en el SELECT
+        if estructura_logica.get("agrupar_por"):
+            for grp in estructura_logica["agrupar_por"]:
+                tbl = columna_a_tabla[grp]
+                select_cols.append(f"{tbl}.{grp}")
+            select_cols.append("COUNT(*)") # Usualmente GROUP BY va con count
+        else:
+            # Select normal
+            attrs = estructura_logica.get("atributos_mostrar", ["*"])
+            for attr in attrs:
+                if attr == "*" or "COUNT" in attr:
+                    select_cols.append(attr)
+                else:
+                    tbl = columna_a_tabla[attr]
+                    select_cols.append(f"{tbl}.{attr}")
+
+    sql = f"SELECT {', '.join(select_cols)} {sql_from}"
+
+    # 5. Generar WHERE
+    condiciones = []
+    for cond in estructura_logica.get("condiciones", []):
+        tbl = columna_a_tabla[cond["atributo"]]
+        val = cond["valor"]
+        # Validar tipo y comillas
+        tipo = esquema_db[tbl].get(cond["atributo"], "str")
+        if tipo in {"str", "string", "date"} and not str(val).startswith("'"):
+            val = f"'{val}'"
+        condiciones.append(f"{tbl}.{cond['atributo']} {cond['operador']} {val}")
+    
+    if condiciones:
+        sql += " WHERE " + " AND ".join(condiciones)
+
+    # 6. Generar GROUP BY
+    if estructura_logica.get("agrupar_por"):
+        grupos = [f"{columna_a_tabla[g]}.{g}" for g in estructura_logica["agrupar_por"]]
+        sql += " GROUP BY " + ", ".join(grupos)
+
+    # 7. Generar ORDER BY
+    if estructura_logica.get("ordenar_por"):
+        ord_col = estructura_logica["ordenar_por"]["columna"]
+        ord_dir = estructura_logica["ordenar_por"].get("direccion", "ASC")
+        tbl = columna_a_tabla[ord_col]
+        sql += f" ORDER BY {tbl}.{ord_col} {ord_dir}"
+
     return sql + ";"
-
-
 # =====================================================================
 # MÓDULO 4: EJECUCIÓN PRINCIPAL (Integración de Tareas 1 y 2)
 # =====================================================================
-
+'''
 if __name__ == "__main__":
     
     print("Iniciando compilador NL-SQL (Flujo modular)...")
@@ -353,8 +397,10 @@ if __name__ == "__main__":
     # Carga el Trie de Palabras (para prompt y validación)
     diccionario_valido_trie = generar_trie_desde_diccionario()
     
-    # (P2) Tarea 2: Cargas el Esquema de la DB (¡Desde archivo!)
-    esquema_db = cargar_esquema_db()
+    # (P2) Tarea 2: Cargas el Esquema de la DB (¡Desde archivo!)esquema_db = cargar_esquema_db()
+    with open("relaciones_tablas.txt", "r", encoding="utf-8") as f:
+        relaciones_texto = f.read() 
+    esquema_db, relaciones_fk = cargar_esquema_db(relaciones_texto)
     
     # (P2) Tarea 1: Creas el prompt para Whisper
     prompt_contexto = crear_prompt_para_whisper()
@@ -368,8 +414,8 @@ if __name__ == "__main__":
     # --- INICIA EL PROCESO DEL COMPILADOR ---
     # -------------------------------------------------
     
-    # (P2) Tarea 1: Transcripción REAL (desde transcribir_audio.py)
-    nombre_archivo_audio = "g2.m4a"
+    # (P2) Tarea 1: Transcripcicón REAL (desde transcribir_audio.py)
+    nombre_archivo_audio = "c2.m4a"
     texto_transcrito = transcribir_audio(nombre_archivo_audio, prompt_contexto)
     if not texto_transcrito:
         print("No se pudo obtener la transcripción. Saliendo.")
@@ -381,7 +427,7 @@ if __name__ == "__main__":
         estructura_logica = analisis_sintactico(tokens)
         
         # (P2) Fase 3: Análisis Semántico y Generación de Código
-        sql_final = analisis_semantico_y_generacion(estructura_logica, esquema_db)
+        sql_final = analisis_semantico_y_generacion(estructura_logica, esquema_db, relaciones_fk)
 
         # --- Resultado Final ---
         print("\n" + "="*40)
@@ -396,3 +442,60 @@ if __name__ == "__main__":
         with open(nombre_archivo_para_gestor, "w", encoding="utf-8") as f:
             f.write(sql_final)
         print(f"\nConsulta SQL final guardada en: {nombre_archivo_para_gestor}")
+'''
+if __name__ == "__main__":
+    
+    print("Iniciando compilador NL-SQL sin Whisper (modo texto)...")
+    
+    # --- 1. Carga Inicial ---
+    sincronizar_diccionario() 
+    diccionario_valido_trie = generar_trie_desde_diccionario()
+    
+    # Cargar esquema
+    with open("relaciones_tablas.txt", "r", encoding="utf-8") as f:
+        relaciones_texto = f.read() 
+    esquema_db, relaciones_fk = cargar_esquema_db(relaciones_texto)
+
+    # -------------------------------
+    # LEER ARCHIVO DE CONSULTAS
+    # -------------------------------
+    archivo_consultas = "consultas.txt"
+
+    if not os.path.exists(archivo_consultas):
+        print(f"ERROR: No existe el archivo {archivo_consultas}")
+        exit()
+
+    with open(archivo_consultas, "r", encoding="utf-8") as f:
+        consultas = [line.strip() for line in f.readlines() if line.strip()]
+
+    print(f"\nSe encontraron {len(consultas)} consultas para procesar.\n")
+
+    # Archivo donde se guardarán todos los resultados SQL
+    salida = "sql_generado.txt"
+    salida_f = open(salida, "w", encoding="utf-8")
+
+    # -------------------------------
+    # PROCESAR CADA CONSULTA
+    # -------------------------------
+    for consulta in consultas:
+        print("\n--------------------------------------------")
+        print("Consulta NL:", consulta)
+
+        # FASE 1: Léxico
+        tokens = analisis_lexico(consulta)
+
+        # FASE 2: Sintáctico
+        estructura_logica = analisis_sintactico(tokens)
+
+        # FASE 3: Semántico
+        sql_final = analisis_semantico_y_generacion(estructura_logica, esquema_db, relaciones_fk)
+
+        # Mostrar
+        print("SQL generado:", sql_final)
+
+        # Guardar
+        salida_f.write(f"-- Consulta NL: {consulta}\n")
+        salida_f.write(sql_final + "\n\n")
+
+    salida_f.close()
+    print("\nProceso completado. SQL generado en:", salida)

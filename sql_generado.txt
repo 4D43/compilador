@@ -1,0 +1,36 @@
+-- Consulta NL: Muéstrame las ventas con sus clientes
+SELECT  FROM ventas;
+
+-- Consulta NL: Muéstrame los productos con sus ventas
+SELECT  FROM productos;
+
+-- Consulta NL: Muéstrame los clientes con sus ventas donde monto mayor a 100
+-- Error Semántico: Columna 'sus' no encontrada en la DB.
+
+-- Consulta NL: Dame las ventas con el nombre del cliente
+-- Error Semántico: Columna 'el' no encontrada en la DB.
+
+-- Consulta NL: Muéstrame las ventas con los productos vendidos
+-- Error Semántico: Columna 'los' no encontrada en la DB.
+
+-- Consulta NL: Dame los clientes que compraron productos con precio mayor a 50
+-- Error Semántico: Columna 'compraron' no encontrada en la DB.
+
+-- Consulta NL: Muéstrame los empleados con su departamento
+SELECT  FROM empleados;
+
+-- Consulta NL: Muéstrame las ventas con el cliente y el producto
+-- Error Semántico: Columna 'el' no encontrada en la DB.
+
+-- Consulta NL: Cuántas ventas tiene cada cliente
+SELECT COUNT(*) FROM ventas;
+
+-- Consulta NL: Ordena los clientes por el total de sus ventas
+-- Error: No se identificaron tablas.
+
+-- Consulta NL: Muéstrame las ventas del producto laptop con el nombre del cliente
+-- Error Semántico: Columna 'producto' no encontrada en la DB.
+
+-- Consulta NL: Dame los clientes con id menor a 5
+SELECT  FROM clientes WHERE clientes.id < 5;
+
