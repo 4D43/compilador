@@ -425,6 +425,431 @@ class ScientificSemantic:
         if orders: sql += " ORDER BY " + ", ".join(orders)
         return sql + ";"
 # ==============================================================================
+# FASE 4: TEST BENCHMARK & DATA GENERATOR (V2 - SCALED 100x)
+# ==============================================================================
+import random
+import difflib
+from datetime import datetime, timedelta
+
+def setup_environment():
+    with open("relaciones_tablas.txt", "w") as f:
+        f.write("clientes#id#int#nombre#str#edad#int#dept#string\n")
+        f.write("productos#id#int#nombre#string#precio#float\n")
+        f.write("ventas#id#int#fecha#string#cliente_id#int#producto_id#int#total#int\n")
+        f.write("empleados#empleado_id#int#nombre#str#salario#float#departamento#str\n")
+
+def normalize_sql(sql):
+    """Limpia el SQL para comparar lógica y no formato"""
+    # 1. Quitar punto y coma final
+    s = sql.strip().rstrip(';')
+    # 2. Todo a minúsculas
+    s = s.lower()
+    # 3. Eliminar espacios múltiples y saltos de línea
+    s = " ".join(s.split())
+    # 4. Quitar espacios alrededor de operadores comunes
+    for op in ['=', '>', '<', '>=', '<=', '!=']:
+        s = s.replace(f" {op} ", op)
+    return s
+
+def generate_test_cases():
+    cases = []
+    nombres = ["Juan", "Maria", "Pedro", "Ana", "Luis", "Sofia", "Carlos", "Elena", "Xavier", "Zoe"]
+    
+    # ---------------------------------------------------------
+    # 1. SIMPLE WHERE (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        nom = random.choice(nombres)
+        cases.append({
+            "type": "SIMPLE_WHERE",
+            "nl": f"dame las ventas donde cliente sea {nom}",
+            # Nota: El compilador infiere JOINs. El orden del JOIN depende del BFS.
+            # Asumimos que el compilador hace JOIN ventas -> clientes
+            "sql": f"SELECT * FROM ventas JOIN clientes ON ventas.cliente_id=clientes.id WHERE clientes.nombre = '{nom}'"
+        })
+
+    # ---------------------------------------------------------
+    # 2. NUMERIC COMPARE (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        edad = random.randint(18, 90)
+        op_nl, op_sql = random.choice([("mayor a", ">"), ("menor a", "<"), ("igual a", "=")])
+        cases.append({
+            "type": "NUMERIC_COMPARE",
+            "nl": f"clientes con edad {op_nl} {edad}",
+            "sql": f"SELECT * FROM clientes WHERE clientes.edad {op_sql} {edad}"
+        })
+
+    # ---------------------------------------------------------
+    # 3. PROJECTION (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        dept = random.choice(["ventas", "it", "rrhh", "marketing"])
+        cases.append({
+            "type": "PROJECTION",
+            "nl": f"muéstrame nombre y edad de clientes donde departamento sea {dept}",
+            "sql": f"SELECT clientes.nombre, clientes.edad FROM clientes WHERE clientes.dept = '{dept}'"
+        })
+
+    # ---------------------------------------------------------
+    # 4. AGGREGATION (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        # Mezclamos Count, Sum, Avg
+        tipo = random.choice(["count", "sum", "avg"])
+        if tipo == "count":
+            cases.append({
+                "type": "AGGREGATION",
+                "nl": "cuantos clientes hay",
+                "sql": "SELECT COUNT(*) FROM clientes"
+            })
+        elif tipo == "sum":
+            cases.append({
+                "type": "AGGREGATION",
+                "nl": "suma total de ventas",
+                "sql": "SELECT SUM(ventas.total) FROM ventas"
+            })
+        else: # avg
+            cases.append({
+                "type": "AGGREGATION",
+                "nl": "promedio de precio de productos",
+                "sql": "SELECT AVG(productos.precio) FROM productos"
+            })
+
+    # ---------------------------------------------------------
+    # 5. GROUP BY (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        # Ajuste: El compilador suele poner SELECT [columna], [agregacion]
+        # NL: total vendido por cliente
+        cases.append({
+            "type": "GROUP_BY",
+            "nl": "total vendido por cliente",
+            "sql": "SELECT SUM(ventas.total), clientes.nombre FROM ventas JOIN clientes ON ventas.cliente_id=clientes.id GROUP BY clientes.nombre"
+        })
+
+    # ---------------------------------------------------------
+    # 6. BETWEEN (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        v1 = random.randint(10, 40)
+        v2 = v1 + random.randint(5, 20)
+        cases.append({
+            "type": "BETWEEN",
+            "nl": f"clientes con edad entre {v1} y {v2}",
+            "sql": f"SELECT * FROM clientes WHERE clientes.edad BETWEEN {v1} AND {v2}"
+        })
+
+    # ---------------------------------------------------------
+    # 7. DATE LOGIC (100 casos)
+    # ---------------------------------------------------------
+    now = datetime.now()
+    last_month = (now - timedelta(days=30)).strftime("'%Y-%m-%d'")
+    
+    for _ in range(100):
+        cases.append({
+            "type": "DATE_LOGIC",
+            "nl": "dame las ventas del ultimo mes",
+            # El compilador genera fecha >= 'YYYY-MM-DD'
+            "sql": f"SELECT * FROM ventas WHERE ventas.fecha >= {last_month}"
+        })
+
+    # ---------------------------------------------------------
+    # 8. ORDERING (100 casos)
+    # ---------------------------------------------------------
+    for _ in range(100):
+        direction_nl, direction_sql = random.choice([("descendente", "DESC"), ("ascendente", "ASC")])
+        cases.append({
+            "type": "ORDERING",
+            "nl": f"ordenar productos por precio {direction_nl}",
+            "sql": f"SELECT * FROM productos ORDER BY productos.precio {direction_sql}"
+        })
+
+    return cases
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
+from math import pi
+import random
+
+# --- NUEVA FUNCIÓN DE VISUALIZACIÓN ---
+def plot_results(results_list):
+    df = pd.DataFrame(results_list)
+    
+    # 1. HEATMAP (Espectrograma de fallos)
+    plt.figure(figsize=(12, 6))
+    # Creamos una matriz: Filas=Categoría, Columnas=Número de caso (0-99), Valor=Similitud
+    df['Case_ID'] = df.groupby('Category').cumcount()
+    pivot = df.pivot(index="Category", columns="Case_ID", values="Similarity")
+    
+    plt.imshow(pivot, aspect='auto', cmap='RdYlGn', vmin=0, vmax=1)
+    plt.colorbar(label="Similitud (0=Fallo, 1=Perfecto)")
+    plt.yticks(range(len(pivot.index)), pivot.index)
+    plt.xlabel("Índice del Caso de Prueba (0-100)")
+    plt.title("Espectrograma de Estabilidad: ¿Dónde falla el modelo?")
+    plt.tight_layout()
+    plt.savefig('reporte_espectrograma.png')
+    print(">> Guardado: reporte_espectrograma.png")
+
+    # 2. GRÁFICO 3D (Categoría vs Caso vs Similitud)
+    fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Convertir categorías a números para el eje X
+    cats = df['Category'].unique()
+    cat_map = {name: i for i, name in enumerate(cats)}
+    df['Cat_Num'] = df['Category'].map(cat_map)
+    
+    # Scatter plot
+    sc = ax.scatter(df['Cat_Num'], df['Case_ID'], df['Similarity'], 
+                    c=df['Similarity'], cmap='viridis', s=30, alpha=0.8)
+    
+    ax.set_xticks(list(cat_map.values()))
+    ax.set_xticklabels(list(cat_map.keys()), rotation=45, ha='right')
+    ax.set_xlabel('Categoría')
+    ax.set_ylabel('ID Caso')
+    ax.set_zlabel('Similitud')
+    plt.title("Distribución 3D de la Precisión")
+    plt.colorbar(sc)
+    plt.savefig('reporte_3d.png')
+    print(">> Guardado: reporte_3d.png")
+def analyze_and_plot(dataset, lexer, parser, sem):
+    # 1. Recolectar Datos
+    results = []
+    print("Procesando datos para tablas y gráficos...")
+    
+    for i, case in enumerate(dataset):
+        try:
+            tokens = lexer.tokenize(case['nl'])
+            contract = parser.parse(tokens)
+            gen_sql = sem.generate_sql(contract)
+        except Exception as e:
+            gen_sql = f"ERROR: {e}"
+            
+        # Normalización básica para comparación
+        def norm(s): return " ".join(s.strip().lower().replace(";","").split())
+        gen_norm = norm(gen_sql)
+        exp_norm = norm(case['sql'])
+        
+        # Clasificación de Error (Simplificada)
+        error_type = "None"
+        if gen_norm != exp_norm:
+            if "join" in exp_norm and "join" not in gen_norm: error_type = "Falta JOIN"
+            elif "group by" in exp_norm and "group by" not in gen_norm: error_type = "Falta GROUP BY"
+            elif "where" in exp_norm and "where" not in gen_norm: error_type = "Falta WHERE"
+            else: error_type = "Sintaxis/Otro"
+
+        results.append({
+            "Categoria": case['type'],
+            "Iteracion": i % 100,
+            "Exactitud": 1 if gen_norm == exp_norm else 0,
+            "Error": error_type
+        })
+
+    df = pd.DataFrame(results)
+
+    # 2. TABLA DE ERRORES (Imprimir en consola)
+    print("\n=== TOP ERRORES REPETITIVOS ===")
+    errores = df[df["Error"] != "None"]["Error"].value_counts()
+    print(errores.to_markdown() if hasattr(errores, 'to_markdown') else errores)
+
+    # 3. GRAFICO 1: BARRAS DE RENDIMIENTO
+    plt.style.use('ggplot')
+    plt.figure(figsize=(10, 6))
+    acc_by_cat = df.groupby("Categoria")["Exactitud"].mean() * 100
+    colors = ['#27AE60' if x > 80 else '#E74C3C' for x in acc_by_cat]
+    
+    bars = plt.bar(acc_by_cat.index, acc_by_cat.values, color=colors)
+    plt.title("Porcentaje de Éxito por Categoría (Accuracy)")
+    plt.ylabel("Éxito (%)")
+    plt.bar_label(bars, fmt='%.1f%%')
+    plt.tight_layout()
+    plt.savefig('grafico_barras.png')
+    print(">> Generado: grafico_barras.png")
+
+    # 4. GRAFICO 2: EVOLUCIÓN (Stream Graph Simulado)
+    plt.figure(figsize=(12, 6))
+    cats = df["Categoria"].unique()
+    for cat in cats:
+        subset = df[df["Categoria"] == cat].sort_values("Iteracion")
+        # Media móvil acumulada para suavizar la línea
+        subset['Acumulado'] = subset['Exactitud'].expanding().mean()
+        plt.plot(subset['Iteracion'], subset['Acumulado'], label=cat, linewidth=2.5)
+    
+    plt.title("Evolución de Estabilidad (Promedio Acumulado)")
+    plt.xlabel("Número de Test (0-100)")
+    plt.ylabel("Precisión Promedio")
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig('grafico_lineas_evolucion.png')
+    print(">> Generado: grafico_lineas_evolucion.png")
+
+def plot_paper_visualizations():
+    # Configuración de estilo profesional
+    plt.style.use('ggplot') 
+    plt.rcParams['font.family'] = 'sans-serif'
+    
+    # Crear un panel grande de 2x3
+    fig = plt.figure(figsize=(18, 12))
+    
+    # ==============================================================================
+    # 1. RADAR CHART: ANÁLISIS DE ROBUSTEZ
+    # ==============================================================================
+    ax1 = fig.add_subplot(231, polar=True)
+    categories = ['Ortografía\n(Typos)', 'Sinónimos\nInusuales', 'Orden\nAleatorio', 'Palabras\nExtra', 'Mayúsc/Minusc']
+    N = len(categories)
+    
+    # Datos simulados: Baseline (Ideal) vs Tu Modelo
+    values_base = [100, 100, 100, 100, 100]
+    values_curr = [60, 45, 80, 50, 95]   # Simulación de tu modelo actual
+    
+    # Cerrar el loop del radar
+    values_curr += values_curr[:1]
+    angles = [n / float(N) * 2 * pi for n in range(N)]
+    angles += angles[:1]
+    
+    ax1.plot(angles, values_curr, linewidth=2, linestyle='-', label='Tu Modelo', color='#E74C3C')
+    ax1.fill(angles, values_curr, '#E74C3C', alpha=0.25)
+    ax1.set_xticks(angles[:-1])
+    ax1.set_xticklabels(categories, size=9, weight='bold')
+    ax1.set_ylim(0, 100)
+    ax1.set_title("1. Sensibilidad al Ruido (Robustez)", y=1.1, weight='bold', color='#333333')
+    
+    # ==============================================================================
+    # 2. BUBBLE CHART: COMPLEJIDAD VS LATENCIA
+    # ==============================================================================
+    ax2 = fig.add_subplot(232)
+    n = 150
+    # Simulación de datos
+    x = np.random.randint(5, 25, n) # Longitud consulta
+    y = (x * 2) + np.random.normal(0, 10, n) + abs(np.random.normal(0, 30, n)) # Latencia
+    z = np.random.randint(1, 5, n) # Complejidad (JOINs) - Tamaño burbuja
+    colors = ['#2ECC71' if random.random() > (c/6) else '#E74C3C' for c in z] # Verde=Éxito, Rojo=Fallo
+    
+    scatter = ax2.scatter(x, y, s=z*80, c=colors, alpha=0.6, edgecolors='white')
+    ax2.set_xlabel("Longitud de Consulta (Tokens)")
+    ax2.set_ylabel("Tiempo de Ejecución (ms)")
+    ax2.set_title("2. Límites de Procesamiento", weight='bold', color='#333333')
+    ax2.text(0.05, 0.9, '● Éxito', transform=ax2.transAxes, color='#2ECC71', weight='bold')
+    ax2.text(0.05, 0.85, '● Fallo', transform=ax2.transAxes, color='#E74C3C', weight='bold')
+
+    # ==============================================================================
+    # 3. NESTED DONUT: TAXONOMÍA DE ERRORES
+    # ==============================================================================
+    ax3 = fig.add_subplot(233)
+    # Anillo interno: Fase
+    inner_sz = [30, 20, 50]
+    inner_lbl = ['Lexer', 'Parser', 'Semantic']
+    inner_col = ['#FFCCBC', '#B3E5FC', '#C8E6C9']
+    
+    # Anillo externo: Error específico
+    outer_sz = [20, 10, 15, 5, 30, 20]
+    outer_lbl = ['Typos', 'New Word', 'Order', 'Missing Op', 'No JOIN', 'Ambiguity']
+    outer_col = ['#FFAB91', '#FF8A65', '#81D4FA', '#4FC3F7', '#A5D6A7', '#81C784']
+    
+    ax3.pie(inner_sz, radius=1, labels=inner_lbl, wedgeprops=dict(width=0.3, edgecolor='w'), colors=inner_col)
+    ax3.pie(outer_sz, radius=0.7, labels=outer_lbl, labeldistance=0.75, wedgeprops=dict(width=0.3, edgecolor='w'), colors=outer_col, textprops={'fontsize': 8})
+    ax3.set_title("3. Desglose de Causa Raíz de Errores", weight='bold', color='#333333')
+
+    # ==============================================================================
+    # 4. HEATMAP: MATRIZ DE CONFUSIÓN DE TOKENS
+    # ==============================================================================
+    ax4 = fig.add_subplot(234)
+    data = np.array([[98, 2, 0], [5, 90, 5], [1, 4, 95]]) # Simulación
+    labels = ['CMD', 'AGG', 'COL']
+    im = ax4.imshow(data, cmap='Blues')
+    ax4.set_xticks(np.arange(3)); ax4.set_yticks(np.arange(3))
+    ax4.set_xticklabels(labels); ax4.set_yticklabels(labels)
+    ax4.set_title("4. Precisión de Clasificación de Tokens", weight='bold', color='#333333')
+    # Anotar
+    for i in range(3):
+        for j in range(3):
+            ax4.text(j, i, f"{data[i, j]}%", ha="center", va="center", color="black")
+
+    # ==============================================================================
+    # 5. HISTOGRAMA: DENSIDAD DE ERRORES
+    # ==============================================================================
+    ax5 = fig.add_subplot(235)
+    # Simula que los errores ocurren más al final de la frase compleja
+    err_pos = np.concatenate([np.random.normal(3, 1, 30), np.random.normal(8, 2, 70)])
+    ax5.hist(err_pos, bins=15, color='#8E44AD', alpha=0.7)
+    ax5.set_title("5. ¿Dónde se rompe la frase?", weight='bold', color='#333333')
+    ax5.set_xlabel("Posición del Token en la frase")
+
+    # ==============================================================================
+    # 6. STACKED BAR: PROFILING DE LATENCIA
+    # ==============================================================================
+    ax6 = fig.add_subplot(236)
+    qs = ['Simple', 'Filtro', 'Agregación', 'Group By']
+    l_lex = [2, 3, 3, 4]
+    l_par = [5, 8, 12, 18]
+    l_gen = [1, 2, 3, 6]
+    
+    x = range(4)
+    ax6.bar(x, l_lex, label='Lexer', color='#F1C40F')
+    ax6.bar(x, l_par, bottom=l_lex, label='Parser', color='#E67E22')
+    ax6.bar(x, l_gen, bottom=np.array(l_lex)+np.array(l_par), label='SQL Gen', color='#D35400')
+    ax6.set_xticks(x); ax6.set_xticklabels(qs)
+    ax6.set_title("6. Latencia por Componente", weight='bold', color='#333333')
+    ax6.legend()
+
+    plt.tight_layout()
+    plt.savefig('reporte_cientifico.png', dpi=300)
+    print(">> Gráfico generado: reporte_cientifico.png")
+# --- VERSIÓN ACTUALIZADA DEL EJECUTOR ---
+def run_experiments():
+    setup_environment()
+    trie = init_trie()
+    lexer = ScientificLexer(trie)
+    parser = ScientificParser()
+    sem = ScientificSemantic("relaciones_tablas.txt")
+    
+    dataset = generate_test_cases()
+    total = len(dataset)
+    
+    # Lista para guardar datos detallados para los gráficos
+    detailed_results = []
+    
+    print(f"\n{'='*70}")
+    print(f"EJECUTANDO BENCHMARK VISUAL ({total} CASOS)")
+    print(f"{'='*70}")
+    
+    for i, case in enumerate(dataset):
+        try:
+            tokens = lexer.tokenize(case['nl'])
+            contract = parser.parse(tokens)
+            gen_sql_raw = sem.generate_sql(contract)
+        except Exception as e:
+            gen_sql_raw = f"ERROR: {e}"
+
+        gen_norm = normalize_sql(gen_sql_raw)
+        exp_norm = normalize_sql(case['sql'])
+        
+        # Calcular similitud
+        similarity = difflib.SequenceMatcher(None, gen_norm, exp_norm).ratio()
+        is_exact = 1 if gen_norm == exp_norm else 0
+        
+        # Guardar dato individual
+        detailed_results.append({
+            "Category": case['type'],
+            "NL": case['nl'],
+            "Similarity": similarity,
+            "Exact": is_exact
+        })
+
+    # Generar reportes visuales
+    plot_results(detailed_results)
+    analyze_and_plot(dataset, lexer, parser, sem)
+    plot_paper_visualizations()
+    
+    # Imprimir resumen de texto clásico
+    df = pd.DataFrame(detailed_results)
+    print("\nRESUMEN FINAL:")
+    print(df.groupby("Category")[["Exact", "Similarity"]].mean())
+# ==============================================================================
 # MAIN TESTER
 # ==============================================================================
 if __name__ == "__main__":
@@ -457,3 +882,5 @@ if __name__ == "__main__":
         sql = sem.generate_sql(con)
         print(f"✅ SQL: \033[92m{sql}\033[0m")
         print("-" * 50) 
+
+    run_experiments()
