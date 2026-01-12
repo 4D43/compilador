@@ -1,0 +1,2913 @@
+[
+  {
+    "id": 1,
+    "db_id": "concert_singer",
+    "question_en": "How many singers do we have?",
+    "question_es": "cuantos cantantes tenemos",
+    "gold_sql": "SELECT count(*) FROM singer",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "stadium id"
+        ],
+        [
+          0,
+          "location"
+        ],
+        [
+          0,
+          "name"
+        ],
+        [
+          0,
+          "capacity"
+        ],
+        [
+          0,
+          "highest"
+        ],
+        [
+          0,
+          "lowest"
+        ],
+        [
+          0,
+          "average"
+        ],
+        [
+          1,
+          "singer id"
+        ],
+        [
+          1,
+          "name"
+        ],
+        [
+          1,
+          "country"
+        ],
+        [
+          1,
+          "song name"
+        ],
+        [
+          1,
+          "song release year"
+        ],
+        [
+          1,
+          "age"
+        ],
+        [
+          1,
+          "is male"
+        ],
+        [
+          2,
+          "concert id"
+        ],
+        [
+          2,
+          "concert name"
+        ],
+        [
+          2,
+          "theme"
+        ],
+        [
+          2,
+          "stadium id"
+        ],
+        [
+          2,
+          "year"
+        ],
+        [
+          3,
+          "concert id"
+        ],
+        [
+          3,
+          "singer id"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "Stadium_ID"
+        ],
+        [
+          0,
+          "Location"
+        ],
+        [
+          0,
+          "Name"
+        ],
+        [
+          0,
+          "Capacity"
+        ],
+        [
+          0,
+          "Highest"
+        ],
+        [
+          0,
+          "Lowest"
+        ],
+        [
+          0,
+          "Average"
+        ],
+        [
+          1,
+          "Singer_ID"
+        ],
+        [
+          1,
+          "Name"
+        ],
+        [
+          1,
+          "Country"
+        ],
+        [
+          1,
+          "Song_Name"
+        ],
+        [
+          1,
+          "Song_release_year"
+        ],
+        [
+          1,
+          "Age"
+        ],
+        [
+          1,
+          "Is_male"
+        ],
+        [
+          2,
+          "concert_ID"
+        ],
+        [
+          2,
+          "concert_Name"
+        ],
+        [
+          2,
+          "Theme"
+        ],
+        [
+          2,
+          "Stadium_ID"
+        ],
+        [
+          2,
+          "Year"
+        ],
+        [
+          3,
+          "concert_ID"
+        ],
+        [
+          3,
+          "Singer_ID"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "number",
+        "number",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "others",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "text"
+      ],
+      "db_id": "concert_singer",
+      "foreign_keys": [
+        [
+          18,
+          1
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          20,
+          15
+        ]
+      ],
+      "primary_keys": [
+        1,
+        8,
+        15,
+        20
+      ],
+      "table_names": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer in concert"
+      ],
+      "table_names_original": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer_in_concert"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "db_id": "concert_singer",
+    "question_en": "What is the total number of singers?",
+    "question_es": "What is the total number of singers?",
+    "gold_sql": "SELECT count(*) FROM singer",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "stadium id"
+        ],
+        [
+          0,
+          "location"
+        ],
+        [
+          0,
+          "name"
+        ],
+        [
+          0,
+          "capacity"
+        ],
+        [
+          0,
+          "highest"
+        ],
+        [
+          0,
+          "lowest"
+        ],
+        [
+          0,
+          "average"
+        ],
+        [
+          1,
+          "singer id"
+        ],
+        [
+          1,
+          "name"
+        ],
+        [
+          1,
+          "country"
+        ],
+        [
+          1,
+          "song name"
+        ],
+        [
+          1,
+          "song release year"
+        ],
+        [
+          1,
+          "age"
+        ],
+        [
+          1,
+          "is male"
+        ],
+        [
+          2,
+          "concert id"
+        ],
+        [
+          2,
+          "concert name"
+        ],
+        [
+          2,
+          "theme"
+        ],
+        [
+          2,
+          "stadium id"
+        ],
+        [
+          2,
+          "year"
+        ],
+        [
+          3,
+          "concert id"
+        ],
+        [
+          3,
+          "singer id"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "Stadium_ID"
+        ],
+        [
+          0,
+          "Location"
+        ],
+        [
+          0,
+          "Name"
+        ],
+        [
+          0,
+          "Capacity"
+        ],
+        [
+          0,
+          "Highest"
+        ],
+        [
+          0,
+          "Lowest"
+        ],
+        [
+          0,
+          "Average"
+        ],
+        [
+          1,
+          "Singer_ID"
+        ],
+        [
+          1,
+          "Name"
+        ],
+        [
+          1,
+          "Country"
+        ],
+        [
+          1,
+          "Song_Name"
+        ],
+        [
+          1,
+          "Song_release_year"
+        ],
+        [
+          1,
+          "Age"
+        ],
+        [
+          1,
+          "Is_male"
+        ],
+        [
+          2,
+          "concert_ID"
+        ],
+        [
+          2,
+          "concert_Name"
+        ],
+        [
+          2,
+          "Theme"
+        ],
+        [
+          2,
+          "Stadium_ID"
+        ],
+        [
+          2,
+          "Year"
+        ],
+        [
+          3,
+          "concert_ID"
+        ],
+        [
+          3,
+          "Singer_ID"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "number",
+        "number",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "others",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "text"
+      ],
+      "db_id": "concert_singer",
+      "foreign_keys": [
+        [
+          18,
+          1
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          20,
+          15
+        ]
+      ],
+      "primary_keys": [
+        1,
+        8,
+        15,
+        20
+      ],
+      "table_names": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer in concert"
+      ],
+      "table_names_original": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer_in_concert"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "db_id": "concert_singer",
+    "question_en": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+    "question_es": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+    "gold_sql": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "stadium id"
+        ],
+        [
+          0,
+          "location"
+        ],
+        [
+          0,
+          "name"
+        ],
+        [
+          0,
+          "capacity"
+        ],
+        [
+          0,
+          "highest"
+        ],
+        [
+          0,
+          "lowest"
+        ],
+        [
+          0,
+          "average"
+        ],
+        [
+          1,
+          "singer id"
+        ],
+        [
+          1,
+          "name"
+        ],
+        [
+          1,
+          "country"
+        ],
+        [
+          1,
+          "song name"
+        ],
+        [
+          1,
+          "song release year"
+        ],
+        [
+          1,
+          "age"
+        ],
+        [
+          1,
+          "is male"
+        ],
+        [
+          2,
+          "concert id"
+        ],
+        [
+          2,
+          "concert name"
+        ],
+        [
+          2,
+          "theme"
+        ],
+        [
+          2,
+          "stadium id"
+        ],
+        [
+          2,
+          "year"
+        ],
+        [
+          3,
+          "concert id"
+        ],
+        [
+          3,
+          "singer id"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "Stadium_ID"
+        ],
+        [
+          0,
+          "Location"
+        ],
+        [
+          0,
+          "Name"
+        ],
+        [
+          0,
+          "Capacity"
+        ],
+        [
+          0,
+          "Highest"
+        ],
+        [
+          0,
+          "Lowest"
+        ],
+        [
+          0,
+          "Average"
+        ],
+        [
+          1,
+          "Singer_ID"
+        ],
+        [
+          1,
+          "Name"
+        ],
+        [
+          1,
+          "Country"
+        ],
+        [
+          1,
+          "Song_Name"
+        ],
+        [
+          1,
+          "Song_release_year"
+        ],
+        [
+          1,
+          "Age"
+        ],
+        [
+          1,
+          "Is_male"
+        ],
+        [
+          2,
+          "concert_ID"
+        ],
+        [
+          2,
+          "concert_Name"
+        ],
+        [
+          2,
+          "Theme"
+        ],
+        [
+          2,
+          "Stadium_ID"
+        ],
+        [
+          2,
+          "Year"
+        ],
+        [
+          3,
+          "concert_ID"
+        ],
+        [
+          3,
+          "Singer_ID"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "number",
+        "number",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "others",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "text"
+      ],
+      "db_id": "concert_singer",
+      "foreign_keys": [
+        [
+          18,
+          1
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          20,
+          15
+        ]
+      ],
+      "primary_keys": [
+        1,
+        8,
+        15,
+        20
+      ],
+      "table_names": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer in concert"
+      ],
+      "table_names_original": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer_in_concert"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "db_id": "concert_singer",
+    "question_en": "What are the names, countries, and ages for every singer in descending order of age?",
+    "question_es": "What are the names, countries, and ages for every singer in descending order of age?",
+    "gold_sql": "SELECT name ,  country ,  age FROM singer ORDER BY age DESC",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "stadium id"
+        ],
+        [
+          0,
+          "location"
+        ],
+        [
+          0,
+          "name"
+        ],
+        [
+          0,
+          "capacity"
+        ],
+        [
+          0,
+          "highest"
+        ],
+        [
+          0,
+          "lowest"
+        ],
+        [
+          0,
+          "average"
+        ],
+        [
+          1,
+          "singer id"
+        ],
+        [
+          1,
+          "name"
+        ],
+        [
+          1,
+          "country"
+        ],
+        [
+          1,
+          "song name"
+        ],
+        [
+          1,
+          "song release year"
+        ],
+        [
+          1,
+          "age"
+        ],
+        [
+          1,
+          "is male"
+        ],
+        [
+          2,
+          "concert id"
+        ],
+        [
+          2,
+          "concert name"
+        ],
+        [
+          2,
+          "theme"
+        ],
+        [
+          2,
+          "stadium id"
+        ],
+        [
+          2,
+          "year"
+        ],
+        [
+          3,
+          "concert id"
+        ],
+        [
+          3,
+          "singer id"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "Stadium_ID"
+        ],
+        [
+          0,
+          "Location"
+        ],
+        [
+          0,
+          "Name"
+        ],
+        [
+          0,
+          "Capacity"
+        ],
+        [
+          0,
+          "Highest"
+        ],
+        [
+          0,
+          "Lowest"
+        ],
+        [
+          0,
+          "Average"
+        ],
+        [
+          1,
+          "Singer_ID"
+        ],
+        [
+          1,
+          "Name"
+        ],
+        [
+          1,
+          "Country"
+        ],
+        [
+          1,
+          "Song_Name"
+        ],
+        [
+          1,
+          "Song_release_year"
+        ],
+        [
+          1,
+          "Age"
+        ],
+        [
+          1,
+          "Is_male"
+        ],
+        [
+          2,
+          "concert_ID"
+        ],
+        [
+          2,
+          "concert_Name"
+        ],
+        [
+          2,
+          "Theme"
+        ],
+        [
+          2,
+          "Stadium_ID"
+        ],
+        [
+          2,
+          "Year"
+        ],
+        [
+          3,
+          "concert_ID"
+        ],
+        [
+          3,
+          "Singer_ID"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "number",
+        "number",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "others",
+        "number",
+        "text",
+        "text",
+        "text",
+        "text",
+        "number",
+        "text"
+      ],
+      "db_id": "concert_singer",
+      "foreign_keys": [
+        [
+          18,
+          1
+        ],
+        [
+          21,
+          8
+        ],
+        [
+          20,
+          15
+        ]
+      ],
+      "primary_keys": [
+        1,
+        8,
+        15,
+        20
+      ],
+      "table_names": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer in concert"
+      ],
+      "table_names_original": [
+        "stadium",
+        "singer",
+        "concert",
+        "singer_in_concert"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "db_id": "pets_1",
+    "question_en": "Find the number of pets whose weight is heavier than 10.",
+    "question_es": "Find the number of pets whose weight is heavier than 10.",
+    "gold_sql": "SELECT count(*) FROM pets WHERE weight  >  10",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "student id"
+        ],
+        [
+          0,
+          "last name"
+        ],
+        [
+          0,
+          "first name"
+        ],
+        [
+          0,
+          "age"
+        ],
+        [
+          0,
+          "sex"
+        ],
+        [
+          0,
+          "major"
+        ],
+        [
+          0,
+          "advisor"
+        ],
+        [
+          0,
+          "city code"
+        ],
+        [
+          1,
+          "student id"
+        ],
+        [
+          1,
+          "pet id"
+        ],
+        [
+          2,
+          "pet id"
+        ],
+        [
+          2,
+          "pet type"
+        ],
+        [
+          2,
+          "pet age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "StuID"
+        ],
+        [
+          0,
+          "LName"
+        ],
+        [
+          0,
+          "Fname"
+        ],
+        [
+          0,
+          "Age"
+        ],
+        [
+          0,
+          "Sex"
+        ],
+        [
+          0,
+          "Major"
+        ],
+        [
+          0,
+          "Advisor"
+        ],
+        [
+          0,
+          "city_code"
+        ],
+        [
+          1,
+          "StuID"
+        ],
+        [
+          1,
+          "PetID"
+        ],
+        [
+          2,
+          "PetID"
+        ],
+        [
+          2,
+          "PetType"
+        ],
+        [
+          2,
+          "pet_age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number"
+      ],
+      "db_id": "pets_1",
+      "foreign_keys": [
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "primary_keys": [
+        1,
+        11
+      ],
+      "table_names": [
+        "student",
+        "has pet",
+        "pets"
+      ],
+      "table_names_original": [
+        "Student",
+        "Has_Pet",
+        "Pets"
+      ]
+    }
+  },
+  {
+    "id": 47,
+    "db_id": "pets_1",
+    "question_en": "How many pets have a greater weight than 10?",
+    "question_es": "How many pets have a greater weight than 10?",
+    "gold_sql": "SELECT count(*) FROM pets WHERE weight  >  10",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "student id"
+        ],
+        [
+          0,
+          "last name"
+        ],
+        [
+          0,
+          "first name"
+        ],
+        [
+          0,
+          "age"
+        ],
+        [
+          0,
+          "sex"
+        ],
+        [
+          0,
+          "major"
+        ],
+        [
+          0,
+          "advisor"
+        ],
+        [
+          0,
+          "city code"
+        ],
+        [
+          1,
+          "student id"
+        ],
+        [
+          1,
+          "pet id"
+        ],
+        [
+          2,
+          "pet id"
+        ],
+        [
+          2,
+          "pet type"
+        ],
+        [
+          2,
+          "pet age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "StuID"
+        ],
+        [
+          0,
+          "LName"
+        ],
+        [
+          0,
+          "Fname"
+        ],
+        [
+          0,
+          "Age"
+        ],
+        [
+          0,
+          "Sex"
+        ],
+        [
+          0,
+          "Major"
+        ],
+        [
+          0,
+          "Advisor"
+        ],
+        [
+          0,
+          "city_code"
+        ],
+        [
+          1,
+          "StuID"
+        ],
+        [
+          1,
+          "PetID"
+        ],
+        [
+          2,
+          "PetID"
+        ],
+        [
+          2,
+          "PetType"
+        ],
+        [
+          2,
+          "pet_age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number"
+      ],
+      "db_id": "pets_1",
+      "foreign_keys": [
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "primary_keys": [
+        1,
+        11
+      ],
+      "table_names": [
+        "student",
+        "has pet",
+        "pets"
+      ],
+      "table_names_original": [
+        "Student",
+        "Has_Pet",
+        "Pets"
+      ]
+    }
+  },
+  {
+    "id": 48,
+    "db_id": "pets_1",
+    "question_en": "Find the weight of the youngest dog.",
+    "question_es": "Find the weight of the youngest dog.",
+    "gold_sql": "SELECT weight FROM pets ORDER BY pet_age LIMIT 1",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "student id"
+        ],
+        [
+          0,
+          "last name"
+        ],
+        [
+          0,
+          "first name"
+        ],
+        [
+          0,
+          "age"
+        ],
+        [
+          0,
+          "sex"
+        ],
+        [
+          0,
+          "major"
+        ],
+        [
+          0,
+          "advisor"
+        ],
+        [
+          0,
+          "city code"
+        ],
+        [
+          1,
+          "student id"
+        ],
+        [
+          1,
+          "pet id"
+        ],
+        [
+          2,
+          "pet id"
+        ],
+        [
+          2,
+          "pet type"
+        ],
+        [
+          2,
+          "pet age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "StuID"
+        ],
+        [
+          0,
+          "LName"
+        ],
+        [
+          0,
+          "Fname"
+        ],
+        [
+          0,
+          "Age"
+        ],
+        [
+          0,
+          "Sex"
+        ],
+        [
+          0,
+          "Major"
+        ],
+        [
+          0,
+          "Advisor"
+        ],
+        [
+          0,
+          "city_code"
+        ],
+        [
+          1,
+          "StuID"
+        ],
+        [
+          1,
+          "PetID"
+        ],
+        [
+          2,
+          "PetID"
+        ],
+        [
+          2,
+          "PetType"
+        ],
+        [
+          2,
+          "pet_age"
+        ],
+        [
+          2,
+          "weight"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number"
+      ],
+      "db_id": "pets_1",
+      "foreign_keys": [
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "primary_keys": [
+        1,
+        11
+      ],
+      "table_names": [
+        "student",
+        "has pet",
+        "pets"
+      ],
+      "table_names_original": [
+        "Student",
+        "Has_Pet",
+        "Pets"
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "db_id": "car_1",
+    "question_en": "Find the name of the makers that produced some cars in the year of 1970?",
+    "question_es": "Find the name of the makers that produced some cars in the year of 1970?",
+    "gold_sql": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "cont id"
+        ],
+        [
+          0,
+          "continent"
+        ],
+        [
+          1,
+          "country id"
+        ],
+        [
+          1,
+          "country name"
+        ],
+        [
+          1,
+          "continent"
+        ],
+        [
+          2,
+          "id"
+        ],
+        [
+          2,
+          "maker"
+        ],
+        [
+          2,
+          "full name"
+        ],
+        [
+          2,
+          "country"
+        ],
+        [
+          3,
+          "model id"
+        ],
+        [
+          3,
+          "maker"
+        ],
+        [
+          3,
+          "model"
+        ],
+        [
+          4,
+          "make id"
+        ],
+        [
+          4,
+          "model"
+        ],
+        [
+          4,
+          "make"
+        ],
+        [
+          5,
+          "id"
+        ],
+        [
+          5,
+          "mpg"
+        ],
+        [
+          5,
+          "cylinders"
+        ],
+        [
+          5,
+          "edispl"
+        ],
+        [
+          5,
+          "horsepower"
+        ],
+        [
+          5,
+          "weight"
+        ],
+        [
+          5,
+          "accelerate"
+        ],
+        [
+          5,
+          "year"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "ContId"
+        ],
+        [
+          0,
+          "Continent"
+        ],
+        [
+          1,
+          "CountryId"
+        ],
+        [
+          1,
+          "CountryName"
+        ],
+        [
+          1,
+          "Continent"
+        ],
+        [
+          2,
+          "Id"
+        ],
+        [
+          2,
+          "Maker"
+        ],
+        [
+          2,
+          "FullName"
+        ],
+        [
+          2,
+          "Country"
+        ],
+        [
+          3,
+          "ModelId"
+        ],
+        [
+          3,
+          "Maker"
+        ],
+        [
+          3,
+          "Model"
+        ],
+        [
+          4,
+          "MakeId"
+        ],
+        [
+          4,
+          "Model"
+        ],
+        [
+          4,
+          "Make"
+        ],
+        [
+          5,
+          "Id"
+        ],
+        [
+          5,
+          "MPG"
+        ],
+        [
+          5,
+          "Cylinders"
+        ],
+        [
+          5,
+          "Edispl"
+        ],
+        [
+          5,
+          "Horsepower"
+        ],
+        [
+          5,
+          "Weight"
+        ],
+        [
+          5,
+          "Accelerate"
+        ],
+        [
+          5,
+          "Year"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number"
+      ],
+      "db_id": "car_1",
+      "foreign_keys": [
+        [
+          5,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          16,
+          13
+        ]
+      ],
+      "primary_keys": [
+        1,
+        3,
+        6,
+        10,
+        13,
+        16
+      ],
+      "table_names": [
+        "continents",
+        "countries",
+        "car makers",
+        "model list",
+        "car names",
+        "cars data"
+      ],
+      "table_names_original": [
+        "continents",
+        "countries",
+        "car_makers",
+        "model_list",
+        "car_names",
+        "cars_data"
+      ]
+    }
+  },
+  {
+    "id": 101,
+    "db_id": "car_1",
+    "question_en": "What is the name of the different car makers who produced a car in 1970?",
+    "question_es": "What is the name of the different car makers who produced a car in 1970?",
+    "gold_sql": "SELECT DISTINCT T1.Maker FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker JOIN CAR_NAMES AS T3 ON T2.model  =  T3.model JOIN CARS_DATA AS T4 ON T3.MakeId  =  T4.id WHERE T4.year  =  '1970';",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "cont id"
+        ],
+        [
+          0,
+          "continent"
+        ],
+        [
+          1,
+          "country id"
+        ],
+        [
+          1,
+          "country name"
+        ],
+        [
+          1,
+          "continent"
+        ],
+        [
+          2,
+          "id"
+        ],
+        [
+          2,
+          "maker"
+        ],
+        [
+          2,
+          "full name"
+        ],
+        [
+          2,
+          "country"
+        ],
+        [
+          3,
+          "model id"
+        ],
+        [
+          3,
+          "maker"
+        ],
+        [
+          3,
+          "model"
+        ],
+        [
+          4,
+          "make id"
+        ],
+        [
+          4,
+          "model"
+        ],
+        [
+          4,
+          "make"
+        ],
+        [
+          5,
+          "id"
+        ],
+        [
+          5,
+          "mpg"
+        ],
+        [
+          5,
+          "cylinders"
+        ],
+        [
+          5,
+          "edispl"
+        ],
+        [
+          5,
+          "horsepower"
+        ],
+        [
+          5,
+          "weight"
+        ],
+        [
+          5,
+          "accelerate"
+        ],
+        [
+          5,
+          "year"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "ContId"
+        ],
+        [
+          0,
+          "Continent"
+        ],
+        [
+          1,
+          "CountryId"
+        ],
+        [
+          1,
+          "CountryName"
+        ],
+        [
+          1,
+          "Continent"
+        ],
+        [
+          2,
+          "Id"
+        ],
+        [
+          2,
+          "Maker"
+        ],
+        [
+          2,
+          "FullName"
+        ],
+        [
+          2,
+          "Country"
+        ],
+        [
+          3,
+          "ModelId"
+        ],
+        [
+          3,
+          "Maker"
+        ],
+        [
+          3,
+          "Model"
+        ],
+        [
+          4,
+          "MakeId"
+        ],
+        [
+          4,
+          "Model"
+        ],
+        [
+          4,
+          "Make"
+        ],
+        [
+          5,
+          "Id"
+        ],
+        [
+          5,
+          "MPG"
+        ],
+        [
+          5,
+          "Cylinders"
+        ],
+        [
+          5,
+          "Edispl"
+        ],
+        [
+          5,
+          "Horsepower"
+        ],
+        [
+          5,
+          "Weight"
+        ],
+        [
+          5,
+          "Accelerate"
+        ],
+        [
+          5,
+          "Year"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number"
+      ],
+      "db_id": "car_1",
+      "foreign_keys": [
+        [
+          5,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          16,
+          13
+        ]
+      ],
+      "primary_keys": [
+        1,
+        3,
+        6,
+        10,
+        13,
+        16
+      ],
+      "table_names": [
+        "continents",
+        "countries",
+        "car makers",
+        "model list",
+        "car names",
+        "cars data"
+      ],
+      "table_names_original": [
+        "continents",
+        "countries",
+        "car_makers",
+        "model_list",
+        "car_names",
+        "cars_data"
+      ]
+    }
+  },
+  {
+    "id": 150,
+    "db_id": "car_1",
+    "question_en": "Which makers designed more than 3 car models? List full name and the id.",
+    "question_es": "Which makers designed more than 3 car models? List full name and the id.",
+    "gold_sql": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "cont id"
+        ],
+        [
+          0,
+          "continent"
+        ],
+        [
+          1,
+          "country id"
+        ],
+        [
+          1,
+          "country name"
+        ],
+        [
+          1,
+          "continent"
+        ],
+        [
+          2,
+          "id"
+        ],
+        [
+          2,
+          "maker"
+        ],
+        [
+          2,
+          "full name"
+        ],
+        [
+          2,
+          "country"
+        ],
+        [
+          3,
+          "model id"
+        ],
+        [
+          3,
+          "maker"
+        ],
+        [
+          3,
+          "model"
+        ],
+        [
+          4,
+          "make id"
+        ],
+        [
+          4,
+          "model"
+        ],
+        [
+          4,
+          "make"
+        ],
+        [
+          5,
+          "id"
+        ],
+        [
+          5,
+          "mpg"
+        ],
+        [
+          5,
+          "cylinders"
+        ],
+        [
+          5,
+          "edispl"
+        ],
+        [
+          5,
+          "horsepower"
+        ],
+        [
+          5,
+          "weight"
+        ],
+        [
+          5,
+          "accelerate"
+        ],
+        [
+          5,
+          "year"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "ContId"
+        ],
+        [
+          0,
+          "Continent"
+        ],
+        [
+          1,
+          "CountryId"
+        ],
+        [
+          1,
+          "CountryName"
+        ],
+        [
+          1,
+          "Continent"
+        ],
+        [
+          2,
+          "Id"
+        ],
+        [
+          2,
+          "Maker"
+        ],
+        [
+          2,
+          "FullName"
+        ],
+        [
+          2,
+          "Country"
+        ],
+        [
+          3,
+          "ModelId"
+        ],
+        [
+          3,
+          "Maker"
+        ],
+        [
+          3,
+          "Model"
+        ],
+        [
+          4,
+          "MakeId"
+        ],
+        [
+          4,
+          "Model"
+        ],
+        [
+          4,
+          "Make"
+        ],
+        [
+          5,
+          "Id"
+        ],
+        [
+          5,
+          "MPG"
+        ],
+        [
+          5,
+          "Cylinders"
+        ],
+        [
+          5,
+          "Edispl"
+        ],
+        [
+          5,
+          "Horsepower"
+        ],
+        [
+          5,
+          "Weight"
+        ],
+        [
+          5,
+          "Accelerate"
+        ],
+        [
+          5,
+          "Year"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number"
+      ],
+      "db_id": "car_1",
+      "foreign_keys": [
+        [
+          5,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          16,
+          13
+        ]
+      ],
+      "primary_keys": [
+        1,
+        3,
+        6,
+        10,
+        13,
+        16
+      ],
+      "table_names": [
+        "continents",
+        "countries",
+        "car makers",
+        "model list",
+        "car names",
+        "cars data"
+      ],
+      "table_names_original": [
+        "continents",
+        "countries",
+        "car_makers",
+        "model_list",
+        "car_names",
+        "cars_data"
+      ]
+    }
+  },
+  {
+    "id": 151,
+    "db_id": "car_1",
+    "question_en": "What are the names and ids of all makers with more than 3 models?",
+    "question_es": "What are the names and ids of all makers with more than 3 models?",
+    "gold_sql": "SELECT T1.FullName ,  T1.Id FROM CAR_MAKERS AS T1 JOIN MODEL_LIST AS T2 ON T1.Id  =  T2.Maker GROUP BY T1.Id HAVING count(*)  >  3;",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "cont id"
+        ],
+        [
+          0,
+          "continent"
+        ],
+        [
+          1,
+          "country id"
+        ],
+        [
+          1,
+          "country name"
+        ],
+        [
+          1,
+          "continent"
+        ],
+        [
+          2,
+          "id"
+        ],
+        [
+          2,
+          "maker"
+        ],
+        [
+          2,
+          "full name"
+        ],
+        [
+          2,
+          "country"
+        ],
+        [
+          3,
+          "model id"
+        ],
+        [
+          3,
+          "maker"
+        ],
+        [
+          3,
+          "model"
+        ],
+        [
+          4,
+          "make id"
+        ],
+        [
+          4,
+          "model"
+        ],
+        [
+          4,
+          "make"
+        ],
+        [
+          5,
+          "id"
+        ],
+        [
+          5,
+          "mpg"
+        ],
+        [
+          5,
+          "cylinders"
+        ],
+        [
+          5,
+          "edispl"
+        ],
+        [
+          5,
+          "horsepower"
+        ],
+        [
+          5,
+          "weight"
+        ],
+        [
+          5,
+          "accelerate"
+        ],
+        [
+          5,
+          "year"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "ContId"
+        ],
+        [
+          0,
+          "Continent"
+        ],
+        [
+          1,
+          "CountryId"
+        ],
+        [
+          1,
+          "CountryName"
+        ],
+        [
+          1,
+          "Continent"
+        ],
+        [
+          2,
+          "Id"
+        ],
+        [
+          2,
+          "Maker"
+        ],
+        [
+          2,
+          "FullName"
+        ],
+        [
+          2,
+          "Country"
+        ],
+        [
+          3,
+          "ModelId"
+        ],
+        [
+          3,
+          "Maker"
+        ],
+        [
+          3,
+          "Model"
+        ],
+        [
+          4,
+          "MakeId"
+        ],
+        [
+          4,
+          "Model"
+        ],
+        [
+          4,
+          "Make"
+        ],
+        [
+          5,
+          "Id"
+        ],
+        [
+          5,
+          "MPG"
+        ],
+        [
+          5,
+          "Cylinders"
+        ],
+        [
+          5,
+          "Edispl"
+        ],
+        [
+          5,
+          "Horsepower"
+        ],
+        [
+          5,
+          "Weight"
+        ],
+        [
+          5,
+          "Accelerate"
+        ],
+        [
+          5,
+          "Year"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number"
+      ],
+      "db_id": "car_1",
+      "foreign_keys": [
+        [
+          5,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          16,
+          13
+        ]
+      ],
+      "primary_keys": [
+        1,
+        3,
+        6,
+        10,
+        13,
+        16
+      ],
+      "table_names": [
+        "continents",
+        "countries",
+        "car makers",
+        "model list",
+        "car names",
+        "cars data"
+      ],
+      "table_names_original": [
+        "continents",
+        "countries",
+        "car_makers",
+        "model_list",
+        "car_names",
+        "cars_data"
+      ]
+    }
+  },
+  {
+    "id": 152,
+    "db_id": "car_1",
+    "question_en": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+    "question_es": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+    "gold_sql": "SELECT DISTINCT T2.Model FROM CAR_NAMES AS T1 JOIN MODEL_LIST AS T2 ON T1.Model  =  T2.Model JOIN CAR_MAKERS AS T3 ON T2.Maker  =  T3.Id JOIN CARS_DATA AS T4 ON T1.MakeId  =  T4.Id WHERE T3.FullName  =  'General Motors' OR T4.weight  >  3500;",
+    "difficulty": "unknown",
+    "schema": {
+      "column_names": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "cont id"
+        ],
+        [
+          0,
+          "continent"
+        ],
+        [
+          1,
+          "country id"
+        ],
+        [
+          1,
+          "country name"
+        ],
+        [
+          1,
+          "continent"
+        ],
+        [
+          2,
+          "id"
+        ],
+        [
+          2,
+          "maker"
+        ],
+        [
+          2,
+          "full name"
+        ],
+        [
+          2,
+          "country"
+        ],
+        [
+          3,
+          "model id"
+        ],
+        [
+          3,
+          "maker"
+        ],
+        [
+          3,
+          "model"
+        ],
+        [
+          4,
+          "make id"
+        ],
+        [
+          4,
+          "model"
+        ],
+        [
+          4,
+          "make"
+        ],
+        [
+          5,
+          "id"
+        ],
+        [
+          5,
+          "mpg"
+        ],
+        [
+          5,
+          "cylinders"
+        ],
+        [
+          5,
+          "edispl"
+        ],
+        [
+          5,
+          "horsepower"
+        ],
+        [
+          5,
+          "weight"
+        ],
+        [
+          5,
+          "accelerate"
+        ],
+        [
+          5,
+          "year"
+        ]
+      ],
+      "column_names_original": [
+        [
+          -1,
+          "*"
+        ],
+        [
+          0,
+          "ContId"
+        ],
+        [
+          0,
+          "Continent"
+        ],
+        [
+          1,
+          "CountryId"
+        ],
+        [
+          1,
+          "CountryName"
+        ],
+        [
+          1,
+          "Continent"
+        ],
+        [
+          2,
+          "Id"
+        ],
+        [
+          2,
+          "Maker"
+        ],
+        [
+          2,
+          "FullName"
+        ],
+        [
+          2,
+          "Country"
+        ],
+        [
+          3,
+          "ModelId"
+        ],
+        [
+          3,
+          "Maker"
+        ],
+        [
+          3,
+          "Model"
+        ],
+        [
+          4,
+          "MakeId"
+        ],
+        [
+          4,
+          "Model"
+        ],
+        [
+          4,
+          "Make"
+        ],
+        [
+          5,
+          "Id"
+        ],
+        [
+          5,
+          "MPG"
+        ],
+        [
+          5,
+          "Cylinders"
+        ],
+        [
+          5,
+          "Edispl"
+        ],
+        [
+          5,
+          "Horsepower"
+        ],
+        [
+          5,
+          "Weight"
+        ],
+        [
+          5,
+          "Accelerate"
+        ],
+        [
+          5,
+          "Year"
+        ]
+      ],
+      "column_types": [
+        "text",
+        "number",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "text",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "text",
+        "text",
+        "number",
+        "text",
+        "number",
+        "number",
+        "text",
+        "number",
+        "number",
+        "number"
+      ],
+      "db_id": "car_1",
+      "foreign_keys": [
+        [
+          5,
+          1
+        ],
+        [
+          9,
+          3
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          14,
+          12
+        ],
+        [
+          16,
+          13
+        ]
+      ],
+      "primary_keys": [
+        1,
+        3,
+        6,
+        10,
+        13,
+        16
+      ],
+      "table_names": [
+        "continents",
+        "countries",
+        "car makers",
+        "model list",
+        "car names",
+        "cars data"
+      ],
+      "table_names_original": [
+        "continents",
+        "countries",
+        "car_makers",
+        "model_list",
+        "car_names",
+        "cars_data"
+      ]
+    }
+  }
+]

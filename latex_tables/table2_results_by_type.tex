@@ -1,0 +1,19 @@
+\begin{table*}[ht]
+\centering
+\caption{Precisión por Tipo de Query en Spider Curated Dataset}
+\label{tab:results_by_type}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Tipo} & \textbf{Tests} & \textbf{Exact Match} & \textbf{Similarity} & \textbf{Con WHERE} & \textbf{Con JOIN} \\
+\midrule
+aggregation & 40 & 0.000 & 0.210 & 0.00 & 0.00 \\
+count & 165 & 0.000 & 0.209 & 0.00 & 0.00 \\
+order_by & 1 & 0.000 & 0.202 & 0.00 & 0.00 \\
+select_simple & 140 & 0.000 & 0.183 & 0.00 & 0.00 \\
+where_numeric & 2 & 0.000 & 0.256 & 0.00 & 0.00 \\
+where_string & 2 & 0.000 & 0.285 & 0.00 & 0.00 \\
+\midrule
+\multicolumn{6}{l}{\textit{Accuracy promedio global: 0.000}} \\
+\bottomrule
+\end{tabular}
+\end{table*}

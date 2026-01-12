@@ -1,0 +1,86 @@
+[
+  {
+    "audio_file": "query_001.wav",
+    "reference_text": "cuantos cantantes tenemos",
+    "use_prompt": true,
+    "spider_id": 1,
+    "db": "concert_singer"
+  },
+  {
+    "audio_file": "query_002.wav",
+    "reference_text": "What is the total number of singers?",
+    "use_prompt": true,
+    "spider_id": 2,
+    "db": "concert_singer"
+  },
+  {
+    "audio_file": "query_003.wav",
+    "reference_text": "Show name, country, age for all singers ordered by age from the oldest to the youngest.",
+    "use_prompt": true,
+    "spider_id": 3,
+    "db": "concert_singer"
+  },
+  {
+    "audio_file": "query_004.wav",
+    "reference_text": "What are the names, countries, and ages for every singer in descending order of age?",
+    "use_prompt": true,
+    "spider_id": 4,
+    "db": "concert_singer"
+  },
+  {
+    "audio_file": "query_046.wav",
+    "reference_text": "Find the number of pets whose weight is heavier than 10.",
+    "use_prompt": true,
+    "spider_id": 46,
+    "db": "pets_1"
+  },
+  {
+    "audio_file": "query_047.wav",
+    "reference_text": "How many pets have a greater weight than 10?",
+    "use_prompt": true,
+    "spider_id": 47,
+    "db": "pets_1"
+  },
+  {
+    "audio_file": "query_048.wav",
+    "reference_text": "Find the weight of the youngest dog.",
+    "use_prompt": true,
+    "spider_id": 48,
+    "db": "pets_1"
+  },
+  {
+    "audio_file": "query_100.wav",
+    "reference_text": "Find the name of the makers that produced some cars in the year of 1970?",
+    "use_prompt": true,
+    "spider_id": 100,
+    "db": "car_1"
+  },
+  {
+    "audio_file": "query_101.wav",
+    "reference_text": "What is the name of the different car makers who produced a car in 1970?",
+    "use_prompt": true,
+    "spider_id": 101,
+    "db": "car_1"
+  },
+  {
+    "audio_file": "query_150.wav",
+    "reference_text": "Which makers designed more than 3 car models? List full name and the id.",
+    "use_prompt": true,
+    "spider_id": 150,
+    "db": "car_1"
+  },
+  {
+    "audio_file": "query_151.wav",
+    "reference_text": "What are the names and ids of all makers with more than 3 models?",
+    "use_prompt": true,
+    "spider_id": 151,
+    "db": "car_1"
+  },
+  {
+    "audio_file": "query_152.wav",
+    "reference_text": "Which distinctive models are produced by maker with the full name General Motors or weighing more than 3500?",
+    "use_prompt": true,
+    "spider_id": 152,
+    "db": "car_1"
+  }
+]

@@ -1,0 +1,102 @@
+[
+    {
+        "audio_file": "Grabación (2).m4a",
+        "reference_text": "dame los clientes",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (3).m4a",
+        "reference_text": "cuantos productos hay",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (4).m4a",
+        "reference_text": "ver ventas",
+        "use_prompt": false
+    },
+    {
+        "audio_file": "Grabación (5).m4a",
+        "reference_text": "dame todos los empleados",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (6).m4a",
+        "reference_text": "dame clientes mayores de treinta años",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (7).m4a",
+        "reference_text": "productos con precio mayor a quinientos",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (8).m4a",
+        "reference_text": "dame ventas del vendedor Juan",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (9).m4a",
+        "reference_text": "dame los empleados del departamento de sistemas",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (10).m4a",
+        "reference_text": "dame nombre y edad donde salario sea alto",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (11).m4a",
+        "reference_text": "dame ventas por region y ordenar descendente",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (12).m4a",
+        "reference_text": "muestrame el promedio de ventas por mes",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (13).m4a",
+        "reference_text": "dime cuántos clientes donde ciudad sea madrid",
+        "use_prompt": false
+    },
+    {
+        "audio_file": "Grabación (14).m4a",
+        "reference_text": "ordenar clientes por fecha de registro",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (15).m4a",
+        "reference_text": "dame el total de ingresos",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (16).m4a",
+        "reference_text": "clientes cuyo nombre empiece por a",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (17).m4a",
+        "reference_text": "buscar productos sin stock",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (18).m4a",
+        "reference_text": "dame todo de la tabla usuarios",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (19).m4a",
+        "reference_text": "joinea tablas ventas y clientes",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (20).m4a",
+        "reference_text": "dame el estatus cuando activo",
+        "use_prompt": true
+    },
+    {
+        "audio_file": "Grabación (21).m4a",
+        "reference_text": "dame por categoria electronica",
+        "use_prompt": true
+    }
+]

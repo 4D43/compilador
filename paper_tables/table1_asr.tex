@@ -1,0 +1,13 @@
+\begin{table*}[ht]
+\centering
+\caption{Comparación de Rendimiento ASR: Whisper Baseline vs Prompt Contextual}
+\label{tab:asr_results}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Configuración} & \textbf{WER} & \textbf{CER} & \textbf{KW Precision} & \textbf{KW Recall} & \textbf{Mejora WER} \\
+\midrule
+Whisper Baseline & $0.6749 \pm 0.6802$ & $0.2353 \pm 0.3679$ & $0.8000 \pm 0.3770$ & $0.8000 \pm 0.3770$ & -- \\
+Con Prompt Contextual & $0.6124 \pm 0.4494$ & $0.1927 \pm 0.1580$ & $0.8500 \pm 0.3285$ & $0.8500 \pm 0.3285$ & \textbf{1.9\%} \\
+\bottomrule
+\end{tabular}
+\end{table*}
